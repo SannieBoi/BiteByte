@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>kakav dobar submit jel da</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/submit.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="script.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <a href="index.html"><img src="img/logo_temp.png" alt="BiteByte" id="logo"></a>
+
+        <div class="search-container">
+            <input type="text" name="srcka" id="srcka" placeholder="Search for recipes...">
+            <i class="fa-solid fa-bars phone-only"></i>
+        </div>
+
+        <div class="mobile-nav">
+            <a href="recipes.html">Recipes</a>
+            <a href="blog.html">Blog</a>
+            <a href="support.html">Support</a>
+        </div>
+
+        <nav>
+            <ul>
+                <li><a href="recipes.html">Recipes</a></li>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="support.html">Support</a></li>
+            </ul>
+            <a href="" class="nav_btn" id="login">LOG IN</a>
+            <a href="" class="nav_btn" id="signin">SIGN UP</a>
+        </nav>
+    </header>
+
+
+    <main>
+        <div>
+            <h2 class="h2">Upload a recipe to BiteByte</h2>
+            <form action="" id="submit_form">
+                <div class="field">
+                    <label for="name">What's the name of your dish?</label>
+                    <input type="text" name="name" id="name">
+                </div>
+                <div class="photo_upload">
+                    <label for="photo">Upload a photo of your beautiful dish!</label>
+                    <div class="upload">
+                        <label for="photo" id="photo_label">
+                            <span id="upload_text">Upload</span>
+                            <span id="file_name">No file chosen</span>
+                        </label>
+                        <input type="file" name="photo" id="photo" accept="image/png,image/jpeg">
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="pots">How many pots are needed for this dish?</label>
+                    <div><input type="range" name="pots" id="pots" min="0" max="5"> <label for="pots" id="pots_label">0</label></div>
+                </div>
+                <div class="field">
+                    <label for="diff">How would you rate the difficulty?</label>
+                    <div><input type="range" name="diff" id="diff" min="1" max="5"> <label for="diff" id="diff_label">0</label></div>
+                </div>
+
+                <div class="field">
+                    <label for="ingredients">Which ingredients are needed for this dish?</label>
+                    <input type="text" name="ingredients" id="ingredients">
+                </div>
+
+                <div class="field">
+                    <label for="recipe">Your recipe</label>
+                    <textarea rows="3" id="recipe"></textarea>
+                </div>
+
+                <div class="time field">
+                    <p>How much time is needed to prepare this dish?</p>
+                    <ul>
+                        <li>
+                            <input type="checkbox" name="10">
+                            <label for="10">&lt;10 min</label>
+                        </li>
+                        <li>
+                            <input type="checkbox" name="10-30">
+                            <label for="10-30">10min - 30min</label>
+                        </li>
+                        <li>
+                            <input type="checkbox" name="30-1">
+                            <label for="30-1">30min - 1h</label>
+                        </li>
+                        <li>
+                            <input type="checkbox" name="1-2">
+                            <label for="1-2">1h - 2h</label>
+                        </li>
+                        <li>
+                            <input type="checkbox" name="2">
+                            <label for="2">&gt;2h</label>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="cat field">
+                    <p>Choose relevant categories</p>
+                    <ul>
+                        <li>
+                            <input type="checkbox" name="lunch">
+                            <label for="lunch">Lunch</label>
+                        </li>
+                        <li>
+                            <input type="checkbox" name="snack">
+                            <label for="snack">Snack</label>
+                        </li>
+                        <li>
+                            <input type="checkbox" name="meal">
+                            <label for="meal">Meal</label>
+                        </li>
+                        <li>
+                            <input type="checkbox" name="dessert">
+                            <label for="dessert">Dessert</label>
+                        </li>
+                        <li>
+                            <input type="checkbox" name="breakfast">
+                            <label for="breakfast">Breakfast</label>
+                        </li>
+                        <li>
+                            <input type="checkbox" name="dinner">
+                            <label for="dinner">Dinner</label>
+                        </li>
+                    </ul>
+                </div>
+            
+                <div class="tags field">
+                    <p>Choose relevant tags</p>
+                    <ul>
+                        <li>
+                            <input type="checkbox" name="vegan">
+                            <label for="vegan">Vegan</label>
+                        </li>
+                        <li>
+                            <input type="checkbox" name="gluten">
+                            <label for="gluten">Gluten free</label>
+                        </li>
+                        <li>
+                            <input type="checkbox" name="cheap">
+                            <label for="cheap">Cheap</label>
+                        </li>
+                        <li>
+                            <input type="checkbox" name="vege">
+                            <label for="vege">Vegetarian</label>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <button>Submit</button>
+                </div>
+            </form>
+        </div>
+
+
+        <div class="rouxls">
+            <h3>Rules and guidelines</h3>
+            <p>pozdrav svima moje ime je lorem ipsumovic</p>
+            <ol>
+                <li>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aliquid, pariatur id ipsum rem iure minima doloribus. Dolorum voluptates blanditiis, reprehenderit, atque commodi quis unde voluptatem optio eos tempore odit quibusdam.</li>
+                <li>Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis exercitationem, recusandae autem inventore quos debitis accusamus facilis enim pariatur possimus doloribus nemo, fuga esse nulla, modi dolorum! At tempora eaque voluptatem possimus. Officia qui minima iusto labore aut suscipit, rerum itaque veritatis dicta. Perspiciatis, facilis animi?</li>
+                <li>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Consequuntur enim est odio eaque.</li>
+                <li>Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas libero fugit, mollitia repellat corrupti consequuntur? Nobis excepturi reiciendis repellendus.</li>
+                <li>Bon appetit!</li>
+            </ol>
+            <li>
+                <input type="checkbox">
+                <label for="agree">I have read and agreed to the rules and guidelines</label>
+            </li>
+        </div>
+
+
+    </main>
+    
+
+    <footer>
+        <section class="footer-left">
+            <h2>Subscribe to Our Newsletter</h2>
+            <p>Stay updated with the latest recipes, cooking tips, and exclusive offers by subscribing to our newsletter.</p>
+            <form action="">
+                <input type="email" name="email" id="email" placeholder="Enter your email address">
+                <button type="submit" id="submit">Subscribe</button>
+            </form>
+        </section>
+        <section class="footer-right">
+            <a href="#">Terms of service</a>
+            <a href="#">Privacy policy</a>
+            <a href="contact.html">Contact</a>
+            <a href="blog.html">News</a>
+            <a href="#">Trademarks</a>
+            <a href="#"></a>
+            <a href="#"></a>
+        </section>
+        <p class="copyright">&copy; BiteByte 2026</p>
+    </footer>
+</body>
+<script src="submit.js"></script>
+</html>

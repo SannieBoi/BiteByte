@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>kakav dobar support jel da</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/support.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="script.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <a href="index.html"><img src="img/logo_temp.png" alt="BiteByte" id="logo"></a>
+
+        <div class="search-container">
+            <input type="text" name="srcka" id="srcka" placeholder="Search for recipes...">
+            <i class="fa-solid fa-bars phone-only"></i>
+        </div>
+
+        <div class="mobile-nav">
+            <a href="recipes.html">Recipes</a>
+            <a href="blog.html">Blog</a>
+            <a href="support.html">Support</a>
+        </div>
+
+        <nav>
+            <ul>
+                <li><a href="recipes.html">Recipes</a></li>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="support.html">Support</a></li>
+            </ul>
+            <a href="" class="nav_btn" id="login">LOG IN</a>
+            <a href="" class="nav_btn" id="signin">SIGN UP</a>
+        </nav>
+    </header>
+
+
+    <main>
+        <h2 class="h2">
+            Got problems? Let us know.
+        </h2>
+
+        <form action="" class="support_form">
+            <div>
+                <label for="type">What issues are you experiencing?</label>
+                <select name="type" id="type">
+                    <option value="" disabled selected hidden>--- Choose type ---</option>
+                    <option value="1">Can't log in</option>
+                    <option value="2">Issues with uploading recipes</option>
+                    <option value="3">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Temporibius!</option>
+                    <option value="4">Webpage not loading correctly</option>
+                    <option value="5">Lorem ipsum dolor sit amet consectetur.</option>
+                    <option value="10">Other...</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="email">Email</label>
+                <input type="text" name="email" id="email" placeholder="Enter email address...">
+            </div>
+
+            <div>
+                <label for="name">Name</label>
+                <input type="text" name="name" id="name">
+            </div>
+
+            <div>
+                <label for="subject">Subject</label>
+                <input type="text" name="subject" id="subject">
+            </div>
+
+            <div>
+                <label for="body">Describe your problem...</label>
+                <textarea name="body" id="body"></textarea>
+            </div>
+
+            <button class="sumbit_btn">Submit</button>
+        </form>
+    </main>
+
+    <footer>
+        <section class="footer-left">
+            <h2>Subscribe to Our Newsletter</h2>
+            <p>Stay updated with the latest recipes, cooking tips, and exclusive offers by subscribing to our newsletter.</p>
+            <form action="">
+                <input type="email" name="email" id="email" placeholder="Enter your email address">
+                <button type="submit" id="submit">Subscribe</button>
+            </form>
+        </section>
+        <section class="footer-right">
+            <a href="#">Terms of service</a>
+            <a href="#">Privacy policy</a>
+            <a href="contact.html">Contact</a>
+            <a href="blog.html">News</a>
+            <a href="#">Trademarks</a>
+            <a href="#"></a>
+            <a href="#"></a>
+        </section>
+        <p class="copyright">&copy; BiteByte 2026</p>
+    </footer>
+</body>
+</html>

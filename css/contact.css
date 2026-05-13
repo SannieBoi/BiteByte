@@ -1,0 +1,58 @@
+main{
+    margin:4rem 29rem;
+    padding:3rem;
+
+    border:1px solid rgba(99,99,99,0.4);
+
+    box-shadow:rgba(99,99,99,0.2) 0px 2px 8px 0px;
+
+    border-radius:2rem;
+}
+
+li{
+    list-style:none;
+}
+
+.h2{
+    width:100%;
+    text-align:center;
+    margin-bottom:3rem;
+}
+
+ul{
+    display:grid;
+    gap:2rem;
+
+    p{
+        font-weight:300;
+        font-size:1.4rem;
+        word-break:break-word;
+
+        span{
+            font-weight:700;
+        }
+    }
+}
+
+@media (max-width:768px){
+
+    main{
+        margin:1rem;
+        padding:1.5rem;
+        border-radius:1.2rem;
+    }
+
+    .h2{
+        margin-bottom:2rem;
+        font-size:1.8rem;
+    }
+
+    ul{
+        gap:1.4rem;
+
+        p{
+            font-size:1rem;
+            line-height:1.5;
+        }
+    }
+}
