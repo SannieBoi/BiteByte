@@ -1,0 +1,198 @@
+.hero{
+    background-image: url('../img/picnic-bg.png');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    background-color: bisque;
+    flex-direction: row;
+    align-items: start;
+    justify-content: space-between;
+    text-align: center;
+    padding: 20px calc(5rem + 3px);
+    height: fit-content;
+}
+
+.hero-left{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+    h1{
+        font-size: 2.5rem;
+        color: var(--text-color);
+    }
+    p{
+        font-size: 1.2rem;
+        color: var(--text-color);
+    }
+    
+}
+
+.hero-right{
+    position:relative;
+    width: 22vw;
+    height: 36vh;
+    overflow:hidden;
+    border-radius:40px;
+
+    img{
+        width:100%;
+        height:100%;
+        object-fit:cover;
+        object-position:center;
+        border:3px solid var(--text-color);
+        border-radius:40px;
+        display:block;
+    }
+
+    &::after{
+        content:"";
+        position:absolute;
+        inset:0;
+        box-shadow:inset 0 0 20px rgba(0,0,0,0.6);
+        border-radius:40px;
+        pointer-events:none;
+    }
+}
+.features{
+    margin-top: 2rem;
+}
+
+html, body {
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+
+#srcka{
+    top: 50%;
+}
+
+.feature{
+    max-width: 60vw;
+    width: fit-content;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    margin: 3rem calc(5rem + 3px);
+    gap: 20px;
+    &:nth-child(even){
+        margin-left: auto;
+        align-items: flex-end;
+        text-align: right;
+    }
+}
+.cta-btn{
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: var(--primary-color);
+    color: #fff;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    &:hover {
+        background-color: var(--secondary-color);
+    }
+}
+
+
+
+.showcase {
+    display: flex;
+    position:relative;
+    align-items: center;
+    justify-content: center;
+    margin-top: 4rem;
+    background-color: rgba(0, 0, 0, 0.15);
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3);
+    gap:6rem;
+    left: -50%;
+    width:200vw;
+    height:50vh;
+    border-radius:40px;
+    overflow: hidden;
+    .rotate{
+        width: 16vw;
+        height: 28vh;
+        img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+            object-position:center;
+            border:3px solid var(--text-color);
+            border-radius: 2.8rem;
+            display:block;
+            filter:brightness(0.5)
+        }
+    }
+}
+.rotate.active{
+    width: 500px;
+    height: 400px;
+    filter: brightness(2);
+}
+.hero {
+    /* ... your existing styles ... */
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        padding: 2rem 1rem;
+        align-items: center;
+
+        .hero-left {
+            align-items: center;
+            text-align: center;
+            padding: 0;
+        }
+
+        .hero-right {
+            width: 90%;
+            height: 250px;
+            margin-top: 2rem;
+        }
+    }
+}
+
+.showcase {
+    /* ... your existing styles ... */
+
+    @media (max-width: 768px) {
+        left: 0;
+        width: 100%;
+        gap: 2rem;
+        overflow-x: auto;
+        justify-content: flex-start;
+        padding: 2rem;
+        border-radius: 0;
+
+        .rotate {
+            min-width: 180px;
+            height: 25vh;
+            
+            &.active {
+                width: 180px;
+                height: 25vh;
+            }
+        }
+    }
+}
+
+.features {
+    @media (max-width: 768px) {
+        margin-top: 2rem; /* Adjusted for mobile showcase height */
+    }
+
+    .feature {
+        /* ... your existing styles ... */
+
+        @media (max-width: 768px) {
+            max-width: 95vw;
+            margin: 2rem auto !important;
+            align-items: center !important;
+            text-align: center !important;
+        }
+    }
+}
