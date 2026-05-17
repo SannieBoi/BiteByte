@@ -14,22 +14,23 @@
 </head>
 <body>
     <header>
-        <a href="index.html"><img src="img/logo_temp.png" alt="BiteByte" id="logo"></a>
+        <a href="index.php"><img src="img/logo_temp.png" alt="BiteByte" id="logo"></a>
 
-        <div class="search-container">
-            <input type="text" name="srcka" id="srcka" placeholder="Search for recipes...">
+        <form action="recipes.php" method="GET" class="search-container">
+            <input type="text" name="search" id="srcka" placeholder="Search for recipes...">
+            <button type="submit" style="display: none;"></button>
             <i class="fa-solid fa-bars phone-only"></i>
-        </div>
+        </form>
 
         <div class="mobile-nav">
-            <a href="recipes.html">Recipes</a>
+            <a href="recipes.php">Recipes</a>
             <a href="blog.html">Blog</a>
             <a href="support.html">Support</a>
         </div>
 
         <nav>
             <ul>
-                <li><a href="recipes.html">Recipes</a></li>
+                <li><a href="recipes.php">Recipes</a></li>
                 <li><a href="blog.html">Blog</a></li>
                 <li><a href="support.html">Support</a></li>
             </ul>
@@ -43,7 +44,7 @@
             <div class="hero-left">
                 <h1>Try our recipe of the week!</h1>
                 <p>Try this simple kurac u usta.</p>
-                <a href="recipes.html" class="cta-btn">Explore recipes</a>
+                <a href="recipes.php" class="cta-btn">Explore recipes</a>
             </div>
             <div class="hero-right">
                 <img src="" alt="Recipe of the week" id="week-food">
@@ -73,7 +74,7 @@
             <div class="feature">
                 <h2>Discover New Recipes</h2>
                 <p>Explore a wide variety of recipes from around the world, curated by our team of food enthusiasts. Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda id odio illum minus, culpa maiores doloremque quibusdam explicabo obcaecati animi laudantium aliquid voluptatem ducimus facere tempore unde eveniet earum cumque aliquam debitis eum reiciendis nulla deserunt. Non hic ex aperiam?</p>
-                <a href="recipes.html" class="cta-btn">Explore recipes</a>
+                <a href="recipes.php" class="cta-btn">Explore recipes</a>
             </div>
             <div class="feature">
                 <h2>Share Your Creations</h2>
@@ -83,7 +84,7 @@
             <div class="feature">
                 <h2>Get Inspired</h2>
                 <p>Find inspiration for your next meal with our collection of seasonal recipes, cooking tips, and food trends. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Reiciendis dolorum ab amet, consectetur tempora facere, quis optio tempore temporibus illo pariatur quo est unde molestiae iste consequuntur nobis voluptatibus ipsum debitis iure sunt eos quae suscipit enim. Mollitia delectus dolorem, repellendus doloremque, cumque corporis accusantium nemo quidem commodi ducimus exercitationem!</p>
-                <a href="recipes.html" class="cta-btn">Find ideas</a>
+                <a href="recipes.php" class="cta-btn">Find ideas</a>
             </div>
         </section>
     </main>

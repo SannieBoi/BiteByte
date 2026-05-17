@@ -14,22 +14,23 @@
 </head>
 <body>
     <header>
-        <a href="index.html"><img src="img/logo_temp.png" alt="BiteByte" id="logo"></a>
+        <a href="index.php"><img src="img/logo_temp.png" alt="BiteByte" id="logo"></a>
 
-        <div class="search-container">
-            <input type="text" name="srcka" id="srcka" placeholder="Search for recipes...">
+        <form action="recipes.php" method="GET" class="search-container">
+            <input type="text" name="search" id="srcka" placeholder="Search for recipes...">
+            <button type="submit" style="display: none;"></button>
             <i class="fa-solid fa-bars phone-only"></i>
-        </div>
+        </form>
 
         <div class="mobile-nav">
-            <a href="recipes.html">Recipes</a>
+            <a href="recipes.php">Recipes</a>
             <a href="blog.html">Blog</a>
             <a href="support.html">Support</a>
         </div>
 
         <nav>
             <ul>
-                <li><a href="recipes.html">Recipes</a></li>
+                <li><a href="recipes.php">Recipes</a></li>
                 <li><a href="blog.html">Blog</a></li>
                 <li><a href="support.html">Support</a></li>
             </ul>
