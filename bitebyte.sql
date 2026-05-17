@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 17, 2026 at 02:46 PM
+-- Generation Time: May 17, 2026 at 06:29 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -90,6 +90,31 @@ CREATE TABLE `recipescat` (
   `CategoriesID` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `recipescat`
+--
+
+INSERT INTO `recipescat` (`RecipesID`, `CategoriesID`) VALUES
+(1, 1),
+(1, 5),
+(2, 2),
+(2, 4),
+(3, 1),
+(3, 3),
+(3, 6),
+(4, 2),
+(4, 5),
+(5, 4),
+(6, 4),
+(7, 1),
+(7, 3),
+(7, 6),
+(8, 4),
+(9, 1),
+(9, 3),
+(10, 2),
+(10, 4);
+
 -- --------------------------------------------------------
 
 --
@@ -100,6 +125,34 @@ CREATE TABLE `recipestag` (
   `RecipesID` int(11) NOT NULL,
   `TagsID` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `recipestag`
+--
+
+INSERT INTO `recipestag` (`RecipesID`, `TagsID`) VALUES
+(1, 1),
+(1, 3),
+(1, 5),
+(2, 4),
+(2, 10),
+(3, 6),
+(4, 1),
+(4, 3),
+(4, 4),
+(4, 5),
+(4, 8),
+(4, 11),
+(5, 1),
+(5, 3),
+(6, 1),
+(6, 3),
+(7, 7),
+(8, 4),
+(8, 7),
+(9, 9),
+(10, 4),
+(10, 8);
 
 -- --------------------------------------------------------
 
@@ -136,6 +189,13 @@ CREATE TABLE `tags` (
 INSERT INTO `tags` (`TagsID`, `Name`) VALUES
 (4, 'Cheap'),
 (2, 'Gluten free'),
+(11, 'Greek'),
+(7, 'High-Protein'),
+(10, 'Italian'),
+(8, 'Low-Fat'),
+(9, 'Pasta'),
+(5, 'Raw'),
+(6, 'Sugar-Free'),
 (1, 'Vegan'),
 (3, 'Vegetarian');
 
@@ -231,7 +291,7 @@ ALTER TABLE `support`
 -- AUTO_INCREMENT for table `tags`
 --
 ALTER TABLE `tags`
-  MODIFY `TagsID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `TagsID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `users`
