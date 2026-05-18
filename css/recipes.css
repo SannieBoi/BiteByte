@@ -180,7 +180,7 @@ main{
 }
 
 .bottom{
-    margin-top:auto;
+    margin-top: 1rem;
 }
 
 input[type="checkbox"]{
