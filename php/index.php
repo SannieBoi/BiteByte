@@ -1,9 +1,40 @@
+<?php
+// 1. Uključujemo config.php za PDO konekciju
+require_once 'config.php';
+
+try {
+    // 2. Izvlačimo slike iz baze (LIMIT 10 jer heroImages niz u JS-u ima 10 slika)
+    $sql = "SELECT ImageURL FROM recipes LIMIT 10"; // Promeni 'Image' ako ti se kolona u bazi zove drugačije
+    $stmt = $pdo->query($sql);
+    $slike_iz_baze = $stmt->fetchAll(PDO::FETCH_COLUMN);
+} 
+catch (PDOException $e) {
+    die("Greška pri izvršavanju upita: " . $e->getMessage());
+}
+
+// Ako je baza prazna, pravimo "fallback" sa starim putanjama da sajt ne pukne
+if (empty($slike_iz_baze)) {
+    $slike_iz_baze = [
+        "food1.jpg", "food2.jpg", "food3.jpg", "food4.jpg", "food5.jpg",
+        "food6.jpg", "food7.jpg", "food8.jpg", "food9.jpg", "food10.jpg"
+    ];
+}
+
+// 3. Sređujemo putanje da vode u ispravan folder: ../img/recipe_images/
+$konacne_slike = [];
+foreach ($slike_iz_baze as $slika) {
+    $konacne_slike[] = "../img/recipe_images/" . $slika;
+}
+
+// Uzimamo prvih 8 slika za karusel
+$karusel_slike = array_slice($konacne_slike, 0, 8);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>kakav dobar sajt jel da</title>
+    <title>BiteByte - Početna</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/index.css">
     <script src="../js/script.js"></script>
@@ -43,47 +74,45 @@
         <section class="hero">
             <div class="hero-left">
                 <h1>Try our recipe of the week!</h1>
-                <p>Try this simple kurac u usta.</p>
+                <p>Try this simple and delicious meal recipe.</p>
                 <a href="recipes.php" class="cta-btn">Explore recipes</a>
             </div>
             <div class="hero-right">
-                <img src="" alt="Recipe of the week" id="week-food">
+                <img src="<?php echo htmlspecialchars($konacne_slike[0]); ?>" alt="Recipe of the week" id="week-food">
             </div>
         </section>
     
-
         <div class="showcase-wrapper">
             <button class="showcase-btn showcase-btn-left" id="showcasePrev" aria-label="Previous">&#9664;</button>
             <div class="showcase">
                 <div class="showcase-track">
-                    <div class="rotate"><img src="../img/img-foods/food10.jpg" alt=""></div>
-                    <div class="rotate"><img src="../img/img-foods/food8.jpg" alt=""></div>
-                    <div class="rotate active"><img src="../img/img-foods/food1.jpg" alt=""></div>
-                    <div class="rotate"><img src="../img/img-foods/food9.jpg" alt=""></div>
-                    <div class="rotate"><img src="../img/img-foods/food2.jpg" alt=""></div>
-                    <div class="rotate"><img src="../img/img-foods/food4.jpg" alt=""></div>
-                    <div class="rotate"><img src="../img/img-foods/food6.jpg" alt=""></div>
-                    <div class="rotate"><img src="../img/img-foods/food3.jpg" alt=""></div>
+                    <?php 
+                    foreach ($karusel_slike as $index => $putanja): 
+                        $klasa = ($index == 2) ? "rotate active" : "rotate";
+                    ?>
+                        <div class="<?php echo $klasa; ?>">
+                            <img src="<?php echo htmlspecialchars($putanja); ?>" alt="Recipe Image">
+                        </div>
+                    <?php endforeach; ?>
                 </div>
             </div>
             <button class="showcase-btn showcase-btn-right" id="showcaseNext" aria-label="Next">&#9654;</button>
         </div>
 
-
         <section class="features">
             <div class="feature">
                 <h2>Discover New Recipes</h2>
-                <p>Explore a wide variety of recipes from around the world, curated by our team of food enthusiasts. Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda id odio illum minus, culpa maiores doloremque quibusdam explicabo obcaecati animi laudantium aliquid voluptatem ducimus facere tempore unde eveniet earum cumque aliquam debitis eum reiciendis nulla deserunt. Non hic ex aperiam?</p>
+                <p>Explore a wide variety of recipes from around the world, curated by our team of food enthusiasts.</p>
                 <a href="recipes.php" class="cta-btn">Explore recipes</a>
             </div>
             <div class="feature">
                 <h2>Share Your Creations</h2>
-                <p>Join our community and share your own recipes, tips, and cooking experiences with fellow food lovers. Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis repudiandae, veritatis earum, dolorum mollitia id atque voluptas nihil omnis ab itaque libero quasi vero molestias impedit. Architecto dolorem porro amet.</p>
-                <a href="../html/submit.html" class="cta-btn">Show us your recipes</a>
+                <p>Join our community and share your own recipes, tips, and cooking experiences with fellow food lovers.</p>
+                <a href="submit.php" class="cta-btn">Show us your recipes</a>
             </div>
             <div class="feature">
                 <h2>Get Inspired</h2>
-                <p>Find inspiration for your next meal with our collection of seasonal recipes, cooking tips, and food trends. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Reiciendis dolorum ab amet, consectetur tempora facere, quis optio tempore temporibus illo pariatur quo est unde molestiae iste consequuntur nobis voluptatibus ipsum debitis iure sunt eos quae suscipit enim. Mollitia delectus dolorem, repellendus doloremque, cumque corporis accusantium nemo quidem commodi ducimus exercitationem!</p>
+                <p>Find inspiration for your next meal with our collection of seasonal recipes, cooking tips, and food trends.</p>
                 <a href="recipes.php" class="cta-btn">Find ideas</a>
             </div>
         </section>
@@ -104,12 +133,57 @@
             <a href="../html/contact.html">Contact</a>
             <a href="../html/blog.html">News</a>
             <a href="#">Trademarks</a>
-            <a href="#"></a>
-            <a href="#"></a>
         </section>
         <p class="copyright">&copy; BiteByte 2026</p>
     </footer>
 
+    <script>
+        // Kada se stranica učita, pre nego što drugarov kod krene da vrti slike, zamenjujemo njegov niz našim nizom iz baze
+        window.addEventListener('DOMContentLoaded', () => {
+            // PHP ubacuje nizove ovde nevidljivo za JS greške
+            const php_hero = <?php echo json_encode($konacne_slike); ?>;
+            const php_karusel = <?php echo json_encode($karusel_slike); ?>;
+
+            // Na silu menjamo izvor slika u drugarovom kodu ako pokuša da povuče stare
+            if (typeof heroImages !== 'undefined') {
+                heroImages.length = 0;
+                heroImages.push(...php_hero);
+            }
+        });
+    </script>
+
     <script src="../js/index.js"></script>
+
+    <script>
+        // Pošto buildDOM u index.js koristi fiksni SRCS niz, prepisaćemo SRCS niz u memoriji pre nego što se funkcije izvrše
+        // Ali pošto je u index.js const, JavaScript nam dozvoljava da izmenimo sadržaj niza, pod uslovom da ga uhvatimo na vreme.
+        // Pošto se učitao index.js, pokrenućemo buildDOM ponovo ali sa našim slikama!
+        
+        if (typeof SRCS !== 'undefined') {
+            // Ispraznimo njegove stare slike iz niza i ubacimo naše iz baze
+            SRCS.length = 0; 
+            SRCS.push(...<?php echo json_encode($karusel_slike); ?>);
+            
+            // Ponovo pokrećemo drugarovu funkciju da osveži slike na ekranu
+            if (typeof buildDOM === 'function') {
+                buildDOM();
+                // Ponovo centriramo karusel kako je on zamislio
+                const trackElement = document.querySelector(".showcase-track");
+                if (typeof computeTranslate === 'function' && typeof BUFFER !== 'undefined') {
+                    trackElement.style.transition = "none";
+                    trackElement.style.transform = `translateX(${computeTranslate(BUFFER)}px)`;
+                    trackElement.getBoundingClientRect();
+                    trackElement.style.transition = "";
+                }
+            }
+        }
+        
+        // Menjamo i gornju sliku da bude iz našeg niza
+        const heroImg = document.getElementById("week-food");
+        const php_hero_slike = <?php echo json_encode($konacne_slike); ?>;
+        if(heroImg) {
+            heroImg.src = php_hero_slike[Math.floor(Math.random() * php_hero_slike.length)];
+        }
+    </script>
 </body>
 </html>
