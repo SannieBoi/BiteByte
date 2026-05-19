@@ -1,6 +1,6 @@
 // --- Hero image ---
 const image = document.getElementById("week-food");
-const heroImages = ["img/img-foods/food1.jpg","img/img-foods/food2.jpg","img/img-foods/food3.jpg","img/img-foods/food4.jpg","img/img-foods/food5.jpg","img/img-foods/food6.jpg","img/img-foods/food7.jpg","img/img-foods/food8.jpg","img/img-foods/food9.jpg","img/img-foods/food10.jpg"];
+const heroImages = ["../img/img-foods/food1.jpg","../img/img-foods/food2.jpg","../img/img-foods/food3.jpg","../img/img-foods/food4.jpg","../img/img-foods/food5.jpg","../img/img-foods/food6.jpg","../img/img-foods/food7.jpg","../img/img-foods/food8.jpg","../img/img-foods/food9.jpg","../img/img-foods/food10.jpg"];
 image.src = heroImages[Math.floor(Math.random() * heroImages.length)];
 
 // --- Showcase infinite carousel ---
@@ -8,14 +8,14 @@ const showcase = document.querySelector(".showcase");
 const track = document.querySelector(".showcase-track");
 
 const SRCS = [
-    "img/img-foods/food10.jpg",
-    "img/img-foods/food8.jpg",
-    "img/img-foods/food1.jpg",
-    "img/img-foods/food9.jpg",
-    "img/img-foods/food2.jpg",
-    "img/img-foods/food4.jpg",
-    "img/img-foods/food6.jpg",
-    "img/img-foods/food3.jpg",
+    "../img/img-foods/food10.jpg",
+    "../img/img-foods/food8.jpg",
+    "../img/img-foods/food1.jpg",
+    "../img/img-foods/food9.jpg",
+    "../img/img-foods/food2.jpg",
+    "../img/img-foods/food4.jpg",
+    "../img/img-foods/food6.jpg",
+    "../img/img-foods/food3.jpg",
 ];
 const N = SRCS.length;
 

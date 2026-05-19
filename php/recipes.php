@@ -21,10 +21,10 @@ if ($search_term !== '') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BiteByte - Recipes</title>
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/recipes.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/recipes.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <script src="script.js"></script>
+    <script src="../js/script.js"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -32,7 +32,7 @@ if ($search_term !== '') {
 </head>
 <body>
     <header>
-        <a href="index.php"><img src="img/logo_temp.png" alt="BiteByte" id="logo"></a>
+        <a href="index.php"><img src="../img/logo_temp.png" alt="BiteByte" id="logo"></a>
 
         <form action="recipes.php" method="GET" class="search-container">
             <input type="text" name="search" id="srcka" placeholder="Search for recipes..." value="<?php echo htmlspecialchars($search_term); ?>">
@@ -42,18 +42,18 @@ if ($search_term !== '') {
 
         <div class="mobile-nav">
             <a href="recipes.php">Recipes</a>
-            <a href="blog.html">Blog</a>
-            <a href="support.html">Support</a>
+            <a href="../html/blog.html">Blog</a>
+            <a href="../html/support.html">Support</a>
         </div>
 
         <nav>
             <ul>
                 <li><a href="recipes.php">Recipes</a></li>
-                <li><a href="blog.html">Blog</a></li>
-                <li><a href="support.html">Support</a></li>
+                <li><a href="../html/blog.html">Blog</a></li>
+                <li><a href="../html/support.html">Support</a></li>
             </ul>
-            <a href="login.html" class="nav_btn" id="login">LOG IN</a>
-            <a href="signup.html" class="nav_btn" id="signin">SIGN UP</a>
+            <a href="../html/login.html" class="nav_btn" id="login">LOG IN</a>
+            <a href="../html/signup.html" class="nav_btn" id="signin">SIGN UP</a>
         </nav>
     </header>
 
@@ -122,7 +122,7 @@ if ($search_term !== '') {
                     <div class="recept">
                         <h3><?php echo htmlspecialchars($recipe['Title']); ?></h3>
                         
-                        <img src="img/recipe_images/<?php echo htmlspecialchars($recipe['ImageURL']); ?>" alt="<?php echo htmlspecialchars($recipe['Title']); ?>">
+                        <img src="../img/recipe_images/<?php echo htmlspecialchars($recipe['ImageURL']); ?>" alt="<?php echo htmlspecialchars($recipe['Title']); ?>">
                         
                         <div class="properties">
                             <div class="property property_time">
@@ -205,8 +205,8 @@ if ($search_term !== '') {
         <section class="footer-right">
             <a href="#">Terms of service</a>
             <a href="#">Privacy policy</a>
-            <a href="contact.html">Contact</a>
-            <a href="blog.html">News</a>
+            <a href="../html/contact.html">Contact</a>
+            <a href="../html/blog.html">News</a>
             <a href="#">Trademarks</a>
         </section>
         <p class="copyright">&copy; BiteByte 2026</p>
@@ -215,6 +215,6 @@ if ($search_term !== '') {
         <i class="fa-solid fa-sliders"></i>
     </button>
 
-    <script src="recipes.js"></script>
+    <script src="../js/recipes.js"></script>
 </body>
 </html>
