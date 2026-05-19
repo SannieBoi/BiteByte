@@ -1,0 +1,203 @@
+/* ── Layout ──────────────────────────────────────────────────────── */
+
+main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+/* ── Container ───────────────────────────────────────────────────── */
+
+.login-signup-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: min(420px, 100%);
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    background-color: white;
+    box-sizing: border-box;
+
+    @media (max-width: 480px) {
+        width: 100%;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+    }
+}
+
+/* ── Header row ──────────────────────────────────────────────────── */
+
+.login-signup-top {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 1.5rem;
+
+    & h2 {
+        margin: 0;
+        font-size: 1.2rem;
+    }
+}
+
+.back {
+    position: absolute;
+    left: 0;
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 50%;
+    border: 1px solid rgba(99, 99, 99, 0.4);
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+        background-color: rgba(99, 99, 99, 0.1);
+    }
+}
+
+/* ── Form ────────────────────────────────────────────────────────── */
+
+form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0.6rem;
+
+    & label {
+        margin-bottom: 0.3rem;
+        margin-left: 0.2rem;
+        font-size: 0.9rem;
+    }
+
+    & input {
+        padding: 0.5rem 0.6rem;
+        font-size: 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid rgba(99, 99, 99, 0.4);
+        box-shadow: rgba(99, 99, 99, 0.15) 0px 1px 4px 0px;
+        width: 100%;
+        box-sizing: border-box;
+        transition: border-color 0.2s ease;
+
+        &:focus {
+            outline: none;
+            border-color: rgba(99, 99, 99, 0.7);
+        }
+    }
+
+    & small {
+        font-size: 0.78rem;
+        color: #e05a30;
+        min-height: 1rem;
+        margin-left: 0.2rem;
+        margin-top: 0.15rem;
+    }
+
+    /* ── Validation states ───────────────────────────────────────── */
+
+    &.error input {
+        border-color: #e05a30;
+    }
+
+    &.success input {
+        border-color: #2a9d5c;
+    }
+
+    /* ── Submit ──────────────────────────────────────────────────── */
+
+    &.form-group--submit {
+        align-items: center;
+        margin-top: 0.8rem;
+
+        & button {
+            width: 80%;
+            padding: 0.55rem;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 0.6rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-bottom: 0.8rem;
+
+            &:hover {
+                background-color: var(--secondary-color);
+            }
+        }
+    }
+}
+
+/* ── Password rules slide-down ───────────────────────────────────── */
+
+.password-rules {
+    display: grid;
+    grid-template-rows: 0fr;
+    overflow: hidden;
+    transition: grid-template-rows 0.32s ease, margin 0.32s ease, opacity 0.32s ease;
+    margin: 0;
+    opacity: 0;
+
+    &.visible {
+        grid-template-rows: 1fr;
+        margin: 0.3rem 0 0.4rem;
+        opacity: 1;
+
+        & .password-rules-inner {
+            padding: 0.5rem 0.75rem;
+        }
+    }
+}
+
+.password-rules-inner {
+    overflow: hidden;
+    padding: 0;
+    background: #f7f7f7;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(99, 99, 99, 0.15);
+    transition: padding 0.32s ease;
+}
+
+.rule {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    color: #999;
+    margin: 0.2rem 0;
+    transition: color 0.2s ease;
+
+    &.passed {
+        color: #2a9d5c;
+    }
+}
+
+.rule-icon {
+    font-size: 0.8rem;
+    width: 0.85rem;
+    text-align: center;
+    flex-shrink: 0;
+    transition: color 0.2s ease;
+}
+
+/* ── Footer link ─────────────────────────────────────────────────── */
+
+a {
+    color: blue;
+}
