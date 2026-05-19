@@ -52,8 +52,8 @@ if ($search_term !== '') {
                 <li><a href="blog.html">Blog</a></li>
                 <li><a href="support.html">Support</a></li>
             </ul>
-            <a href="" class="nav_btn" id="login">LOG IN</a>
-            <a href="" class="nav_btn" id="signin">SIGN UP</a>
+            <a href="login.html" class="nav_btn" id="login">LOG IN</a>
+            <a href="signup.html" class="nav_btn" id="signin">SIGN UP</a>
         </nav>
     </header>
 
