@@ -65,8 +65,8 @@ $karusel_slike = array_slice($konacne_slike, 0, 8);
                 <li><a href="../html/blog.html">Blog</a></li>
                 <li><a href="../html/support.html">Support</a></li>
             </ul>
-            <a href="../html/login.html" class="nav_btn" id="login">LOG IN</a>
-            <a href="../html/signup.html" class="nav_btn" id="signin">SIGN UP</a>
+            <a href="login.php" class="nav_btn" id="login">LOG IN</a>
+            <a href="signup.php" class="nav_btn" id="signin">SIGN UP</a>
         </nav>
     </header>
 

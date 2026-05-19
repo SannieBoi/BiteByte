@@ -107,7 +107,7 @@ form.addEventListener("submit", function (e) {
 
     const isRequiredValid = checkRequired([username, email, password, confirmPassword]);
     let isUsernameValid   = true;
-    let isEmailValid      = true;
+    let isEmailValid      =      true;
     let isPasswordValid   = true;
     let isPasswordsMatch  = true;
 
@@ -124,17 +124,8 @@ form.addEventListener("submit", function (e) {
         isPasswordsMatch = checkPasswordsMatch(password, confirmPassword);
 
     if (isRequiredValid && isUsernameValid && isEmailValid && isPasswordValid && isPasswordsMatch) {
-        alert("Registration successful!");
-        form.reset();
-
-        // Reset visual states
-        document.querySelectorAll(".form-group").forEach(g => g.classList.remove("error", "success"));
-        document.querySelectorAll(".rule").forEach(r => r.classList.remove("passed"));
-        document.querySelectorAll(".rule-icon").forEach(icon => {
-            icon.classList.remove("fa-circle-check");
-            icon.classList.add("fa-circle-xmark");
-        });
-        document.querySelectorAll(".rule-match").forEach(r => r.remove());
+        // Kada je sve 100% ispravno, zaobilazimo preventDefault i guramo formu pravo na PHP obradu
+        e.currentTarget.submit();
     }
 });
 
@@ -158,6 +149,7 @@ function formatFieldName(input) {
         .join(" ");
 }
 
+// Funkcija za prikaz greške (vraća crveni border i poruku)
 function showError(input, message) {
     const formGroup = input.closest(".form-group");
     formGroup.className = "form-group error";
@@ -165,6 +157,7 @@ function showError(input, message) {
     if (small) small.innerText = message;
 }
 
+// Funkcija za prikaz uspeha (vraća zeleni border)
 function showSuccess(input) {
     const formGroup = input.closest(".form-group");
     formGroup.className = "form-group success";
@@ -204,6 +197,7 @@ function checkPasswordStrength(input) {
     return false;
 }
 
+// Provera da li se lozinke poklapaju
 function checkPasswordsMatch(pw, confirm) {
     if (pw.value !== confirm.value) {
         showError(confirm, "Passwords do not match");

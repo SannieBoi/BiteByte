@@ -14,28 +14,28 @@
 </head>
 <body>
     <header>
-        <a href="../php/index.php"><img src="../img/logo_temp.png" alt="BiteByte" id="logo"></a>
+        <a href="index.php"><img src="../img/logo_temp.png" alt="BiteByte" id="logo"></a>
 
-        <form action="../php/recipes.php" method="GET" class="search-container">
+        <form action="recipes.php" method="GET" class="search-container">
             <input type="text" name="search" id="srcka" placeholder="Search for recipes...">
             <button type="submit" style="display: none;"></button>
             <i class="fa-solid fa-bars phone-only"></i>
         </form>
 
         <div class="mobile-nav">
-            <a href="../php/recipes.php">Recipes</a>
-            <a href="blog.html">Blog</a>
-            <a href="support.html">Support</a>
+            <a href="recipes.php">Recipes</a>
+            <a href="../html/blog.html">Blog</a>
+            <a href="../html/support.html">Support</a>
         </div>
 
         <nav>
             <ul>
-                <li><a href="../php/recipes.php">Recipes</a></li>
-                <li><a href="blog.html">Blog</a></li>
-                <li><a href="support.html">Support</a></li>
+                <li><a href="recipes.php">Recipes</a></li>
+                <li><a href="../html/blog.html">Blog</a></li>
+                <li><a href="../html/support.html">Support</a></li>
             </ul>
-            <a href="login.html" class="nav_btn" id="login">LOG IN</a>
-            <a href="signup.html" class="nav_btn" id="signin">SIGN UP</a>
+            <a href="login.php" class="nav_btn" id="login">LOG IN</a>
+            <a href="signup.php" class="nav_btn" id="signin">SIGN UP</a>
         </nav>
     </header>
 
