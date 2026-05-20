@@ -1,55 +1,27 @@
-document.addEventListener("DOMContentLoaded",()=>{
-
-    const filter=document.querySelector(".filter");
-
-    const openBtn=document.createElement("button");
-    openBtn.className="filter-toggle";
-    openBtn.innerHTML='<i class="fa-solid fa-sliders"></i>';
-
-    document.body.appendChild(openBtn);
-
-    const closeBtn=document.createElement("button");
-    closeBtn.className="filter-close";
-    closeBtn.innerHTML='<i class="fa-solid fa-xmark"></i>';
-
-    filter.appendChild(closeBtn);
-
-    openBtn.addEventListener("click",()=>{
-        filter.classList.add("open");
-        document.body.style.overflow="hidden";
-    });
-
-    closeBtn.addEventListener("click",()=>{
-        filter.classList.remove("open");
-        document.body.style.overflow="";
-    });
-
+document.addEventListener("DOMContentLoaded", () => {
+    const filter = document.querySelector(".filter");
     
-document.addEventListener("DOMContentLoaded",()=>{
+    // 1. Hvata dugme za otvaranje koje je već na dnu HTML-a
+    const openBtn = document.querySelector(".filter-toggle");
 
-    const filter=document.querySelector(".filter");
+    // 2. Hvata dugme za zatvaranje koje je već u HTML-u (klasa je close-filter)
+    const closeBtn = document.querySelector(".close-filter");
 
-    const openBtn=document.createElement("button");
-    openBtn.className="filter-toggle";
-    openBtn.innerHTML='<i class="fa-solid fa-sliders"></i>';
+    // Otvaranje filtera na klik (mobilni mod)
+    if (openBtn && filter) {
+        openBtn.addEventListener("click", (e) => {
+            e.preventDefault(); // Sprečava bilo kakvo ludo ponašanje
+            filter.classList.add("open");
+            document.body.style.overflow = "hidden";
+        });
+    }
 
-    document.body.appendChild(openBtn);
-
-    const closeBtn=document.createElement("button");
-    closeBtn.className="filter-close";
-    closeBtn.innerHTML='<i class="fa-solid fa-xmark"></i>';
-
-    filter.appendChild(closeBtn);
-
-    openBtn.addEventListener("click",()=>{
-        filter.classList.add("open");
-        document.body.style.overflow="hidden";
-    });
-
-    closeBtn.addEventListener("click",()=>{
-        filter.classList.remove("open");
-        document.body.style.overflow="";
-    });
-
-    
+    // Zatvaranje filtera na klik
+    if (closeBtn && filter) {
+        closeBtn.addEventListener("click", (e) => {
+            e.preventDefault(); // Jako bitno da ne submituje formu kad klikneš X!
+            filter.classList.remove("open");
+            document.body.style.overflow = "";
+        });
+    }
 });

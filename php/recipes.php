@@ -1,19 +1,124 @@
 <?php
-// 1. NA SAMOM VRHU SE POVEZUJEMO NA BAZU I RADIMO PRETRAGU
+// 1. POVEZIVANJE NA BAZU I SESIJA
 include 'config.php';
 
-// Uzimamo reč iz input polja "search"
-$search_term = $_GET['search'] ?? '';
-
-if ($search_term !== '') {
-    // Ako je korisnik ukucao nešto u pretragu, filtriramo recepte
-    $stmt = $pdo->prepare("SELECT * FROM recipes WHERE Title LIKE ?");
-    $stmt->execute(["%$search_term%"]);
-    $recipes = $stmt->fetchAll();
-} else {
-    // Ako je prazno, izvlačimo svih 10 recepata
-    $recipes = $pdo->query("SELECT * FROM recipes")->fetchAll();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
+
+// Dinamičko preuzimanje svih kategorija i tagova iz baze za filtere
+$all_categories = $pdo->query("SELECT * FROM categories ORDER BY Name ASC")->fetchAll();
+$all_tags = $pdo->query("SELECT * FROM tags ORDER BY Name ASC")->fetchAll();
+
+// 2. KUPLJENJE PARAMETARA IZ URL-a
+$search_term = $_GET['search'] ?? '';
+$pots_needed = isset($_GET['pots']) ? (int)$_GET['pots'] : 15; // Default je max (15) da prikaže sve
+$sort_by     = $_GET['sort'] ?? '';
+$difficulty  = $_GET['difficulty'] ?? ''; // Može biti 1-5
+$rating      = $_GET['rating'] ?? '';     // Može biti 1-5
+
+$selected_categories  = $_GET['category'] ?? [];
+$selected_tags        = $_GET['tags'] ?? [];
+$selected_time_ranges = $_GET['time_ranges'] ?? []; // Niz čekiranih opsega vremena
+
+// 3. DINAMIČKO SPREMANJE SQL UPITA
+$query = "SELECT r.*, 
+                 GROUP_CONCAT(DISTINCT c.Name SEPARATOR ', ') AS CategoryList,
+                 GROUP_CONCAT(DISTINCT t.Name SEPARATOR ', ') AS TagList
+          FROM recipes r
+          LEFT JOIN recipescat rc ON r.RecipesID = rc.RecipesID
+          LEFT JOIN categories c ON rc.CategoriesID = c.CategoriesID
+          LEFT JOIN recipestag rt ON r.RecipesID = rt.RecipesID
+          LEFT JOIN tags t ON rt.TagsID = t.TagsID
+          WHERE 1=1";
+$params = [];
+
+// Pretraga po nazivu
+if ($search_term !== '') {
+    $query .= " AND r.Title LIKE ?";
+    $params[] = "%$search_term%";
+}
+
+// Šerpe: MAKSIMALNO toliko šerpi
+$query .= " AND r.PotsNum <= ?";
+$params[] = $pots_needed;
+
+// Težina (Difficulty)
+if ($difficulty !== '') {
+    $query .= " AND r.Difficulty = ?";
+    $params[] = (int)$difficulty;
+}
+
+// Ocena (Rating)
+if ($rating !== '') {
+    $query .= " AND r.Rating >= ?";
+    $params[] = (int)$rating;
+}
+
+// NOVO: Filtriranje po vremenu pripreme (Time to prepare)
+if (!empty($selected_time_ranges)) {
+    $time_conditions = [];
+    
+    foreach ($selected_time_ranges as $range) {
+        if ($range === 'less_10') {
+            $time_conditions[] = "r.TimeNeeded < 10";
+        } elseif ($range === '10_30') {
+            $time_conditions[] = "r.TimeNeeded BETWEEN 10 AND 30";
+        } elseif ($range === '30_60') {
+            $time_conditions[] = "r.TimeNeeded BETWEEN 31 AND 60";
+        } elseif ($range === '60_120') {
+            $time_conditions[] = "r.TimeNeeded BETWEEN 61 AND 120";
+        } elseif ($range === 'more_120') {
+            $time_conditions[] = "r.TimeNeeded > 120";
+        }
+    }
+    
+    // Spajamo sve izabrane opsege sa OR (npr. kraće od 10 min ILI između 10 i 30 min)
+    if (!empty($time_conditions)) {
+        $query .= " AND (" . implode(" OR ", $time_conditions) . ")";
+    }
+}
+
+// Filtriranje po kategorijama
+if (!empty($selected_categories)) {
+    $in_placeholder = implode(',', array_fill(0, count($selected_categories), '?'));
+    $query .= " AND r.RecipesID IN (
+        SELECT RecipesID FROM recipescat WHERE CategoriesID IN ($in_placeholder)
+    )";
+    foreach ($selected_categories as $cat_id) {
+        $params[] = (int)$cat_id;
+    }
+}
+
+// Filtriranje po tagovima
+if (!empty($selected_tags)) {
+    $in_placeholder = implode(',', array_fill(0, count($selected_tags), '?'));
+    $query .= " AND r.RecipesID IN (
+        SELECT RecipesID FROM recipestag WHERE TagsID IN ($in_placeholder)
+    )";
+    foreach ($selected_tags as $tag_id) {
+        $params[] = (int)$tag_id;
+    }
+}
+
+// Grupisanje zbog GROUP_CONCAT
+$query .= " GROUP BY r.RecipesID";
+
+// 4. SORTIRANJE
+if ($sort_by === 'time_asc') {
+    $query .= " ORDER BY r.TimeNeeded ASC";
+} elseif ($sort_by === 'time_desc') {
+    $query .= " ORDER BY r.TimeNeeded DESC";
+} elseif ($sort_by === 'rating_desc') {
+    $query .= " ORDER BY r.Rating DESC";
+} else {
+    $query .= " ORDER BY r.RecipesID DESC";
+}
+
+// Izvršavanje
+$stmt = $pdo->prepare($query);
+$stmt->execute($params);
+$recipes = $stmt->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -23,12 +128,31 @@ if ($search_term !== '') {
     <title>BiteByte - Recipes</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/recipes.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
     <script src="../js/script.js"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@100..900&family=Roboto:wght@100..900&display=swap" rel="stylesheet">
+    
+    <style>
+        .sort-container { margin-bottom: 20px; display: flex; justify-content: flex-end; align-items: center; gap: 10px; width: 100%; padding-right: 20px; }
+        .sort-container select { padding: 8px 12px; border-radius: 6px; border: 1px solid #ccc; font-family: 'Roboto', sans-serif; }
+        .user-welcome { font-weight: bold; color: #ff5e62; margin-right: 10px; }
+        .filter-apply-btn { background: #ff5e62; color: white; border: none; padding: 10px; width: 100%; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 15px; }
+        .filter-apply-btn:hover { background: #ff4146; }
+        
+        /* CSS ZA SELEKCIJU SIJALICA I ZVEZDICA */
+        .rating-select, .diff-select { display: flex; flex-direction: row-reverse; justify-content: flex-end; align-items: center; gap: 5px; width: 100%; }
+        .rating-select input, .diff-select input { display: none; }
+        .rating-select label, .diff-select label { cursor: pointer; font-size: 1.2rem; color: #ccc; transition: color 0.2s; }
+        
+        .rating-select input:checked ~ label, .rating-select label:hover, .rating-select label:hover ~ label { color: #ffca28; }
+        .diff-select input:checked ~ label, .diff-select label:hover, .diff-select label:hover ~ label { color: #ff5e62; }
+        
+        .clear-label { font-size: 0.85rem; color: #888; margin-left: auto; order: -1; padding-left: 10px; }
+        .clear-label:hover { color: #ff5e62; }
+    </style>
 </head>
 <body>
     <header>
@@ -40,181 +164,191 @@ if ($search_term !== '') {
             <i class="fa-solid fa-bars phone-only"></i>
         </form>
 
-        <div class="mobile-nav">
-            <a href="recipes.php">Recipes</a>
-            <a href="../html/blog.html">Blog</a>
-            <a href="../html/support.html">Support</a>
-        </div>
-
         <nav>
             <ul>
                 <li><a href="recipes.php">Recipes</a></li>
                 <li><a href="../html/blog.html">Blog</a></li>
                 <li><a href="../html/support.html">Support</a></li>
             </ul>
-            <a href="../html/login.html" class="nav_btn" id="login">LOG IN</a>
-            <a href="../html/signup.html" class="nav_btn" id="signin">SIGN UP</a>
+            <?php if (isset($_SESSION['username'])): ?>
+                <a href="add-recipe.php" class="nav_btn" style="background-color: #28a745;">ADD RECIPE</a>
+                <span class="user-welcome">Hi, <?php echo htmlspecialchars($_SESSION['username']); ?>!</span>
+                <a href="logout.php" class="nav_btn" id="login">LOG OUT</a>
+            <?php else: ?>
+                <a href="login.php" class="nav_btn" id="login">LOG IN</a>
+                <a href="signup.php" class="nav_btn" id="signin">SIGN UP</a>
+            <?php endif; ?>
         </nav>
     </header>
 
     <main>
-        <div class="filter">
-            <button class="close-filter">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <div class="left">
-                <div class="choice">
-                    <h3>Time to prepare</h3>
-                    <ul>
-                        <li><input type="checkbox" name="10"><label for="10">&lt;10 min</label></li>
-                        <li><input type="checkbox" name="10-30"><label for="10-30">10min - 30min</label></li>
-                        <li><input type="checkbox" name="30-1"><label for="30-1">30min - 1h</label></li>
-                        <li><input type="checkbox" name="1-2"><label for="1-2">1h - 2h</label></li>
-                        <li><input type="checkbox" name="2"><label for="2">&gt;2h</label></li>
-                    </ul>
-                </div>
-                
-                <div class="choice">
-                    <h3>Pots needed</h3>
-                    <input type="range" name="pots" id="pots" min="0" max="5">
-                    <label for="pots" id="pots_label">0</label>
-                </div>
-                
-                <div class="choice">
-                    <h3>Difficulty</h3>
-                    <i class="fa-solid fa-lightbulb"></i><i class="fa-solid fa-lightbulb"></i><i class="fa-regular fa-lightbulb"></i><i class="fa-regular fa-lightbulb"></i><i class="fa-regular fa-lightbulb"></i>
-                </div>
+        <form action="recipes.php" method="GET" style="display: contents;">
+            <input type="hidden" name="search" value="<?php echo htmlspecialchars($search_term); ?>">
 
-                <div class="choice">
-                    <h3>Ratings</h3>
-                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i>
-                </div>
-                
-                <div class="choice">
-                    <h3>Category</h3>
-                    <ul>
-                        <li><input type="checkbox" name="lunch"><label for="lunch">Lunch</label></li>
-                        <li><input type="checkbox" name="snack"><label for="snack">Snack</label></li>
-                        <li><input type="checkbox" name="meal"><label for="meal">Meal</label></li>
-                        <li><input type="checkbox" name="dessert"><label for="dessert">Dessert</label></li>
-                        <li><input type="checkbox" name="breakfast"><label for="breakfast">Breakfast</label></li>
-                        <li><input type="checkbox" name="dinner"><label for="dinner">Dinner</label></li>
-                    </ul>
-                </div>
-                <div class="choice">
-                    <h3>Tags</h3>
-                    <ul>
-                        <li>Vegan</li>
-                        <li>Gluten free</li>
-                        <li>Cheap</li>
-                        <li>Vegetarian</li>
-                    </ul>
+            <div class="filter">
+                <button type="button" class="close-filter"><i class="fa-solid fa-xmark"></i></button>
+                <div class="left">
+                    <div class="choice">
+                        <h3>Time to prepare</h3>
+                        <ul>
+                            <li>
+                                <input type="checkbox" name="time_ranges[]" value="less_10" id="time1" <?php echo in_array('less_10', $selected_time_ranges) ? 'checked' : ''; ?>>
+                                <label for="time1">&lt;10 min</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" name="time_ranges[]" value="10_30" id="time2" <?php echo in_array('10_30', $selected_time_ranges) ? 'checked' : ''; ?>>
+                                <label for="time2">10min - 30min</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" name="time_ranges[]" value="30_60" id="time3" <?php echo in_array('30_60', $selected_time_ranges) ? 'checked' : ''; ?>>
+                                <label for="time3">30min - 1h</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" name="time_ranges[]" value="60_120" id="time4" <?php echo in_array('60_120', $selected_time_ranges) ? 'checked' : ''; ?>>
+                                <label for="time4">1h - 2h</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" name="time_ranges[]" value="more_120" id="time5" <?php echo in_array('more_120', $selected_time_ranges) ? 'checked' : ''; ?>>
+                                <label for="time5">&gt;2h</label>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="choice">
+                        <h3>Pots needed (Max)</h3>
+                        <input type="range" name="pots" id="pots" min="1" max="15" value="<?php echo htmlspecialchars($pots_needed); ?>" oninput="document.getElementById('pots_label').innerText = this.value">
+                        <label for="pots" id="pots_label"><?php echo htmlspecialchars($pots_needed); ?></label>
+                    </div>
+                    
+                    <div class="choice">
+                        <h3>Difficulty</h3>
+                        <div class="diff-select">
+                            <?php for($i=5; $i>=1; $i--): ?>
+                                <input type="radio" name="difficulty" value="<?php echo $i; ?>" id="diff-<?php echo $i; ?>" <?php echo (int)$difficulty === $i ? 'checked' : ''; ?>>
+                                <label for="diff-<?php echo $i; ?>"><i class="fa-solid fa-lightbulb"></i></label>
+                            <?php endfor; ?>
+                            
+                            <input type="radio" name="difficulty" value="" id="diff-all" <?php echo $difficulty === '' ? 'checked' : ''; ?>>
+                            <label for="diff-all" class="clear-label">Clear</label>
+                        </div>
+                    </div>
+
+                    <div class="choice">
+                        <h3>Ratings (Min)</h3>
+                        <div class="rating-select">
+                            <?php for($i=5; $i>=1; $i--): ?>
+                                <input type="radio" name="rating" value="<?php echo $i; ?>" id="rat-<?php echo $i; ?>" <?php echo (int)$rating === $i ? 'checked' : ''; ?>>
+                                <label for="rat-<?php echo $i; ?>"><i class="fa-solid fa-star"></i></label>
+                            <?php endfor; ?>
+                            
+                            <input type="radio" name="rating" value="" id="rat-all" <?php echo $rating === '' ? 'checked' : ''; ?>>
+                            <label for="rat-all" class="clear-label">Clear</label>
+                        </div>
+                    </div>
+                    
+                    <div class="choice">
+                        <h3>Category</h3>
+                        <ul>
+                            <?php foreach ($all_categories as $cat): 
+                                $checked = in_array($cat['CategoriesID'], $selected_categories) ? 'checked' : '';
+                            ?>
+                                <li>
+                                    <input type="checkbox" name="category[]" value="<?php echo $cat['CategoriesID']; ?>" id="cat-<?php echo $cat['CategoriesID']; ?>" <?php echo $checked; ?>>
+                                    <label for="cat-<?php echo $cat['CategoriesID']; ?>"><?php echo htmlspecialchars($cat['Name']); ?></label>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+
+                    <div class="choice">
+                        <h3>Tags</h3>
+                        <ul>
+                            <?php foreach ($all_tags as $tag): 
+                                $checked = in_array($tag['TagsID'], $selected_tags) ? 'checked' : '';
+                            ?>
+                                <li>
+                                    <input type="checkbox" name="tags[]" value="<?php echo $tag['TagsID']; ?>" id="tag-<?php echo $tag['TagsID']; ?>" <?php echo $checked; ?>>
+                                    <label for="tag-<?php echo $tag['TagsID']; ?>"><?php echo htmlspecialchars($tag['Name']); ?></label>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+
+                    <button type="submit" class="filter-apply-btn">Apply Filters</button>
                 </div>
             </div>
-        </div>
 
-        <div class="recepti">
-            
-            <?php if (count($recipes) > 0): ?>
+            <div class="recepti">
+                <div class="sort-container" style="grid-column: 1/-1;">
+                    <label for="sort">Sort by:</label>
+                    <select name="sort" id="sort" onchange="this.form.submit()">
+                        <option value="">Default (Newest)</option>
+                        <option value="time_asc" <?php echo $sort_by === 'time_asc' ? 'selected' : ''; ?>>Preparation Time (Ascending)</option>
+                        <option value="time_desc" <?php echo $sort_by === 'time_desc' ? 'selected' : ''; ?>>Preparation Time (Descending)</option>
+                        <option value="rating_desc" <?php echo $sort_by === 'rating_desc' ? 'selected' : ''; ?>>Highest Rated</option>
+                    </select>
+                </div>
                 
-                <?php foreach ($recipes as $recipe): ?>
-                    
-                    <div class="recept">
-                        <h3><?php echo htmlspecialchars($recipe['Title']); ?></h3>
-                        
-                        <img src="../img/recipe_images/<?php echo htmlspecialchars($recipe['ImageURL']); ?>" alt="<?php echo htmlspecialchars($recipe['Title']); ?>">
-                        
-                        <div class="properties">
-                            <div class="property property_time">
-                                <p>Time to prepare</p>
-                                <p><?php echo $recipe['TimeNeeded']; ?> min</p>
-                            </div>
-                            <div class="property property_pots">
-                                <p>Pots needed</p>
-                                <p><?php echo $recipe['PotsNum']; ?></p>
-                            </div>
+                <?php if (count($recipes) > 0): ?>
+                    <?php foreach ($recipes as $recipe): ?>
+                        <div class="recept">
+                            <h3><?php echo htmlspecialchars($recipe['Title']); ?></h3>
+                            <img src="../img/recipe_images/<?php echo htmlspecialchars($recipe['ImageURL']); ?>" alt="<?php echo htmlspecialchars($recipe['Title']); ?>">
                             
-                            <div class="property property_diff">
-                                <p>Difficulty</p>
-                                <p>
-                                    <?php 
-                                    for ($i = 1; $i <= 5; $i++) {
-                                        if ($i <= $recipe['Difficulty']) {
-                                            echo '<i class="fa-solid fa-lightbulb"></i> ';
-                                        } else {
-                                            echo '<i class="fa-regular fa-lightbulb"></i> ';
+                            <div class="properties">
+                                <div class="property property_time">
+                                    <p>Time to prepare</p>
+                                    <p><?php echo $recipe['TimeNeeded']; ?> min</p>
+                                </div>
+                                <div class="property property_pots">
+                                    <p>Pots needed</p>
+                                    <p><?php echo $recipe['PotsNum']; ?></p>
+                                </div>
+                                <div class="property property_diff">
+                                    <p>Difficulty</p>
+                                    <p>
+                                        <?php 
+                                        for ($i = 1; $i <= 5; $i++) {
+                                            echo $i <= $recipe['Difficulty'] ? '<i class="fa-solid fa-lightbulb"></i> ' : '<i class="fa-regular fa-lightbulb"></i> ';
                                         }
-                                    }
-                                    ?>
-                                </p>
-                            </div>
-                            
-                            <div class="property property_rat">
-                                <p>Ratings</p>
-                                <p>
-                                    <?php 
-                                    for ($i = 1; $i <= 5; $i++) {
-                                        if ($i <= $recipe['Rating']) {
-                                            echo '<i class="fa-solid fa-star"></i>';
-                                        } else {
-                                            echo '<i class="fa-regular fa-star"></i>';
+                                        ?>
+                                    </p>
+                                </div>
+                                <div class="property property_rat">
+                                    <p>Ratings</p>
+                                    <p>
+                                        <?php 
+                                        for ($i = 1; $i <= 5; $i++) {
+                                            echo $i <= $recipe['Rating'] ? '<i class="fa-solid fa-star"></i>' : '<i class="fa-regular fa-star"></i>';
                                         }
-                                    }
-                                    ?>
-                                </p>
+                                        ?>
+                                    </p>
+                                </div>
+                                <div class="property property_cat">
+                                    <p>Category</p>
+                                    <p><?php echo htmlspecialchars($recipe['CategoryList'] ?? 'General'); ?></p>
+                                </div>
                             </div>
                             
-                            <div class="property property_cat">
-                                <p>Categories</p>
-                                <p>Lunch Meal</p>
+                            <div class="bottom">
+                                <div class="tags">
+                                    <p><?php echo htmlspecialchars($recipe['TagList'] ?? 'No Tags'); ?></p>
+                                </div>
+                                <div class="action">
+                                    <button type="button" class="act heart"><i class="fa-regular fa-heart"></i></button>
+                                    <a href="single_recipe.php?id=<?php echo $recipe['RecipesID']; ?>" class="page">View recipe</a>
+                                    <button type="button" class="act share"><i class="fa-solid fa-share-nodes"></i></button>
+                                </div>
                             </div>
-                        </div>
-                        
-                        <div class="bottom">
-                            <div class="tags">
-                                <p>Cheap</p>
-                            </div>
-                            <div class="action">
-                                <button class="act heart"><i class="fa-regular fa-heart"></i></button>
-                                
-                                <a href="single_recipe.php?id=<?php echo $recipe['RecipesID']; ?>" class="page">View recipe</a>
-                                
-                                <button class="act share"><i class="fa-solid fa-share-nodes"></i></button>
-                            </div>
-                        </div>
-                    </div> <?php endforeach; ?>
-
-            <?php else: ?>
-                <p class="no-results" style="grid-column: 1/-1; text-align: center; font-size: 1.2rem; padding: 50px;">
-                    No recipes found matching your search.
-                </p>
-            <?php endif; ?>
-            
-        </div>
+                        </div> 
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <p class="no-results" style="grid-column: 1/-1; text-align: center; font-size: 1.2rem; padding: 50px;">
+                        No recipes found matching your filters.
+                    </p>
+                <?php endif; ?>
+            </div>
+        </form> 
     </main>
-
-    <footer>
-        <section class="footer-left">
-            <h2>Subscribe to Our Newsletter</h2>
-            <p>Stay updated with the latest recipes, cooking tips, and exclusive offers by subscribing to our newsletter.</p>
-            <form action="">
-                <input type="email" name="email" id="email" placeholder="Enter your email address">
-                <button type="submit" id="submit">Subscribe</button>
-            </form>
-        </section>
-        <section class="footer-right">
-            <a href="#">Terms of service</a>
-            <a href="#">Privacy policy</a>
-            <a href="../html/contact.html">Contact</a>
-            <a href="../html/blog.html">News</a>
-            <a href="#">Trademarks</a>
-        </section>
-        <p class="copyright">&copy; BiteByte 2026</p>
-    </footer>
-    <button class="filter-toggle">
-        <i class="fa-solid fa-sliders"></i>
-    </button>
-
-    <script src="../js/recipes.js"></script>
 </body>
 </html>
