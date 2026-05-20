@@ -29,14 +29,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // 5. Provera lozinke (upoređivanje čistog teksta sa bcrypt hašom)
             if ($user && password_verify($password, $user['Pass'])) {
                 
-                // Lozinka je tačna, upisujemo podatke u sesiju
-                $_SESSION['user_id']   = $user['UsersID'];
+                // POPRAVLJENO: Ključ je promenjen u 'UsersID' da se poklapa sa submit.php i bazom podataka
+                $_SESSION['UsersID']   = $user['UsersID'];
                 $_SESSION['username']  = $user['Username'];
                 
                 session_regenerate_id(true);
 
-                // Šaljemo ga na početnu stranu sajta
-                header("Location: index.php");
+                // Preusmeravamo korisnika odmah na submit.php da proveri formu
+                header("Location: submit.php");
                 exit;
                 
             } else {

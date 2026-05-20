@@ -159,10 +159,16 @@ $recipes = $stmt->fetchAll();
         <a href="index.php"><img src="../img/logo_temp.png" alt="BiteByte" id="logo"></a>
 
         <form action="recipes.php" method="GET" class="search-container">
-            <input type="text" name="search" id="srcka" placeholder="Search for recipes..." value="<?php echo htmlspecialchars($search_term); ?>">
-            <button type="submit" style="display: none;"></button> 
+            <input type="text" name="search" id="srcka" placeholder="Search for recipes...">
+            <button type="submit" style="display: none;"></button>
             <i class="fa-solid fa-bars phone-only"></i>
         </form>
+
+        <div class="mobile-nav">
+            <a href="recipes.php">Recipes</a>
+            <a href="../html/blog.html">Blog</a>
+            <a href="../html/support.html">Support</a>
+        </div>
 
         <nav>
             <ul>
@@ -170,14 +176,8 @@ $recipes = $stmt->fetchAll();
                 <li><a href="../html/blog.html">Blog</a></li>
                 <li><a href="../html/support.html">Support</a></li>
             </ul>
-            <?php if (isset($_SESSION['username'])): ?>
-                <a href="add-recipe.php" class="nav_btn" style="background-color: #28a745;">ADD RECIPE</a>
-                <span class="user-welcome">Hi, <?php echo htmlspecialchars($_SESSION['username']); ?>!</span>
-                <a href="logout.php" class="nav_btn" id="login">LOG OUT</a>
-            <?php else: ?>
-                <a href="login.php" class="nav_btn" id="login">LOG IN</a>
-                <a href="signup.php" class="nav_btn" id="signin">SIGN UP</a>
-            <?php endif; ?>
+            <a href="login.php" class="nav_btn" id="login">LOG IN</a>
+            <a href="signup.php" class="nav_btn" id="signin">SIGN UP</a>
         </nav>
     </header>
 

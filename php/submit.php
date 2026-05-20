@@ -1,16 +1,121 @@
+<?php
+// 1. POVEZIVANJE NA BAZU I SESIJA
+include 'config.php';
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Inicijalizacija search_term promenljive za header da ne baca grešku
+$search_term = $_GET['search'] ?? '';
+
+// Ako korisnik nije ulogovan, odmah ga preusmeri na login.php
+if (!isset($_SESSION['UsersID'])) {
+    header("Location: login.php");
+    exit();
+}
+
+$trenutni_user_id = $_SESSION['UsersID'];
+$poruka = "";
+
+// 2. PREUZIMANJE KATEGORIJA I TAGOVA ZA PRIKAZ U FORMI
+try {
+    $all_categories = $pdo->query("SELECT * FROM categories ORDER BY Name ASC")->fetchAll();
+    $all_tags = $pdo->query("SELECT * FROM tags ORDER BY Name ASC")->fetchAll();
+} catch (PDOException $e) {
+    die("Greška pri čitanju kategorija/tagova: " . $e->getMessage());
+}
+
+// 3. OBRADA FORME NAKON KLIKA NA SUBMIT
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $title = $_POST['name'] ?? '';
+    $pots = isset($_POST['pots']) ? (int)$_POST['pots'] : 0;
+    $diff = isset($_POST['diff']) ? (int)$_POST['diff'] : 1;
+    $time_needed = isset($_POST['time_needed']) ? (int)$_POST['time_needed'] : 0;
+    $description = $_POST['description'] ?? ''; // Umesto ingredients, hvatamo opis
+    $recipe_text = $_POST['recipe'] ?? '';
+    
+    $selected_categories = $_POST['category'] ?? [];
+    $selected_tags = $_POST['tags'] ?? [];
+
+    // Osnovna validacija
+    if (empty($title) || $time_needed <= 0 || empty($recipe_text)) {
+        $poruka = "<p style='color: red;'>Molimo popunite sva obavezna polja (Naziv, Vreme, Recept).</p>";
+    } else {
+        // Logika za upload slike
+        $image_name = "default.png"; // Ako korisnik ne izabere sliku
+        if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+            $file_tmp = $_FILES['photo']['tmp_name'];
+            $original_name = $_FILES['photo']['name'];
+            $ext = pathinfo($original_name, PATHINFO_EXTENSION);
+            
+            // Kreiramo unikatno ime fajla da se ne bi prebrisale slike sa istim imenom
+            $image_name = time() . "_" . uniqid() . "." . $ext;
+            $target_dir = "../img/recipe_images/";
+            
+            // Napravi direktorijum ako ne postoji
+            if (!is_dir($target_dir)) {
+                mkdir($target_dir, 0777, true);
+            }
+            
+            move_uploaded_file($file_tmp, $target_dir . $image_name);
+        }
+
+        try {
+            // Pokrećemo transakciju
+            $pdo->beginTransaction();
+
+            // Umetanje u tabelu 'recipes' (zajedno sa Description i Instructions)
+            $sql_recipe = "INSERT INTO recipes (Title, ImageURL, TimeNeeded, PotsNum, Difficulty, Rating, Description, Instructions, UsersID) 
+                           VALUES (?, ?, ?, ?, ?, 1, ?, ?, ?)";
+            $stmt = $pdo->prepare($sql_recipe);
+            $stmt->execute([$title, $image_name, $time_needed, $pots, $diff, $description, $recipe_text, $trenutni_user_id]);
+            
+            // Uzimamo ID recepta koji je upravo generisan u bazi
+            $novi_recipe_id = $pdo->lastInsertId();
+
+            // Umetanje u veznu tabelu 'recipescat'
+            if (!empty($selected_categories)) {
+                $sql_cat = "INSERT INTO recipescat (RecipesID, CategoriesID) VALUES (?, ?)";
+                $stmt_cat = $pdo->prepare($sql_cat);
+                foreach ($selected_categories as $cat_id) {
+                    $stmt_cat->execute([$novi_recipe_id, (int)$cat_id]);
+                }
+            }
+
+            // Umetanje u veznu tabelu 'recipestag'
+            if (!empty($selected_tags)) {
+                $sql_tag = "INSERT INTO recipestag (RecipesID, TagsID) VALUES (?, ?)";
+                $stmt_tag = $pdo->prepare($sql_tag);
+                foreach ($selected_tags as $tag_id) {
+                    $stmt_tag->execute([$novi_recipe_id, (int)$tag_id]);
+                }
+            }
+
+            // Potvrđujemo izmene u bazi
+            $pdo->commit();
+            $poruka = "<p style='color: green; margin-left: 5em; font-weight: bold;'>Recipe submitted successfully!</p>";
+            
+        } catch (Exception $e) {
+            $pdo->rollBack();
+            $poruka = "<p style='color: red;'>Greška pri upisu u bazu: " . $e->getMessage() . "</p>";
+        }
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>kakav dobar submit jel da</title>
+    <title>BiteByte - Upload Recipe</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/submit.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
     <script src="../js/script.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@100..900&family=Roboto:wght@100..900&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
@@ -39,15 +144,18 @@
         </nav>
     </header>
 
-
     <main>
         <div>
             <h2 class="h2">Upload a recipe to BiteByte</h2>
-            <form action="" id="submit_form">
+            
+            <?php echo $poruka; ?>
+
+            <form action="submit.php" method="POST" id="submit_form" enctype="multipart/form-data">
                 <div class="field">
                     <label for="name">What's the name of your dish?</label>
-                    <input type="text" name="name" id="name">
+                    <input type="text" name="name" id="name" required>
                 </div>
+                
                 <div class="photo_upload">
                     <label for="photo">Upload a photo of your beautiful dish!</label>
                     <div class="upload">
@@ -58,133 +166,91 @@
                         <input type="file" name="photo" id="photo" accept="image/png,image/jpeg">
                     </div>
                 </div>
+                
                 <div class="field">
                     <label for="pots">How many pots are needed for this dish?</label>
-                    <div><input type="range" name="pots" id="pots" min="0" max="5"> <label for="pots" id="pots_label">0</label></div>
+                    <div>
+                        <input type="range" name="pots" id="pots" min="1" max="15" value="1" oninput="document.getElementById('pots_display').innerText = this.value"> 
+                        <label id="pots_display">1</label>
+                    </div>
                 </div>
+                
                 <div class="field">
                     <label for="diff">How would you rate the difficulty?</label>
-                    <div><input type="range" name="diff" id="diff" min="1" max="5"> <label for="diff" id="diff_label">0</label></div>
+                    <div>
+                        <input type="range" name="diff" id="diff" min="1" max="5" value="1" oninput="document.getElementById('diff_display').innerText = this.value"> 
+                        <label id="diff_display">1</label>
+                    </div>
                 </div>
 
                 <div class="field">
-                    <label for="ingredients">Which ingredients are needed for this dish?</label>
-                    <input type="text" name="ingredients" id="ingredients">
+                    <label for="time_needed">How much time is needed to prepare this dish (in minutes)?</label>
+                    <input type="number" name="time_needed" id="time_needed" placeholder="e.g. 45" required>
+                </div>
+
+                <div class="field">
+                    <label for="description">Short description of your dish</label>
+                    <input type="text" name="description" id="description">
                 </div>
 
                 <div class="field">
                     <label for="recipe">Your recipe</label>
-                    <textarea rows="3" id="recipe"></textarea>
-                </div>
-
-                <div class="time field">
-                    <p>How much time is needed to prepare this dish?</p>
-                    <ul>
-                        <li>
-                            <input type="checkbox" name="10">
-                            <label for="10">&lt;10 min</label>
-                        </li>
-                        <li>
-                            <input type="checkbox" name="10-30">
-                            <label for="10-30">10min - 30min</label>
-                        </li>
-                        <li>
-                            <input type="checkbox" name="30-1">
-                            <label for="30-1">30min - 1h</label>
-                        </li>
-                        <li>
-                            <input type="checkbox" name="1-2">
-                            <label for="1-2">1h - 2h</label>
-                        </li>
-                        <li>
-                            <input type="checkbox" name="2">
-                            <label for="2">&gt;2h</label>
-                        </li>
-                    </ul>
+                    <textarea name="recipe" rows="5" id="recipe" required></textarea>
                 </div>
 
                 <div class="cat field">
                     <p>Choose relevant categories</p>
                     <ul>
-                        <li>
-                            <input type="checkbox" name="lunch">
-                            <label for="lunch">Lunch</label>
-                        </li>
-                        <li>
-                            <input type="checkbox" name="snack">
-                            <label for="snack">Snack</label>
-                        </li>
-                        <li>
-                            <input type="checkbox" name="meal">
-                            <label for="meal">Meal</label>
-                        </li>
-                        <li>
-                            <input type="checkbox" name="dessert">
-                            <label for="dessert">Dessert</label>
-                        </li>
-                        <li>
-                            <input type="checkbox" name="breakfast">
-                            <label for="breakfast">Breakfast</label>
-                        </li>
-                        <li>
-                            <input type="checkbox" name="dinner">
-                            <label for="dinner">Dinner</label>
-                        </li>
+                        <?php foreach ($all_categories as $cat): ?>
+                            <li>
+                                <input type="checkbox" name="category[]" value="<?php echo $cat['CategoriesID']; ?>" id="cat-<?php echo $cat['CategoriesID']; ?>">
+                                <label for="cat-<?php echo $cat['CategoriesID']; ?>"><?php echo htmlspecialchars($cat['Name']); ?></label>
+                            </li>
+                        <?php endforeach; ?>
                     </ul>
                 </div>
             
                 <div class="tags field">
                     <p>Choose relevant tags</p>
                     <ul>
-                        <li>
-                            <input type="checkbox" name="vegan">
-                            <label for="vegan">Vegan</label>
-                        </li>
-                        <li>
-                            <input type="checkbox" name="gluten">
-                            <label for="gluten">Gluten free</label>
-                        </li>
-                        <li>
-                            <input type="checkbox" name="cheap">
-                            <label for="cheap">Cheap</label>
-                        </li>
-                        <li>
-                            <input type="checkbox" name="vege">
-                            <label for="vege">Vegetarian</label>
-                        </li>
+                        <?php foreach ($all_tags as $tag): ?>
+                            <li>
+                                <input type="checkbox" name="tags[]" value="<?php echo $tag['TagsID']; ?>" id="tag-<?php echo $tag['TagsID']; ?>">
+                                <label for="tag-<?php echo $tag['TagsID']; ?>"><?php echo htmlspecialchars($tag['Name']); ?></label>
+                            </li>
+                        <?php endforeach; ?>
                     </ul>
                 </div>
+                
                 <div>
-                    <button>Submit</button>
+                    <button type="submit">Submit Recipe</button>
                 </div>
             </form>
         </div>
-
 
         <div class="rouxls">
             <h3>Rules and guidelines</h3>
             <p>pozdrav svima moje ime je lorem ipsumovic</p>
             <ol>
-                <li>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aliquid, pariatur id ipsum rem iure minima doloribus. Dolorum voluptates blanditiis, reprehenderit, atque commodi quis unde voluptatem optio eos tempore odit quibusdam.</li>
-                <li>Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis exercitationem, recusandae autem inventore quos debitis accusamus facilis enim pariatur possimus doloribus nemo, fuga esse nulla, modi dolorum! At tempora eaque voluptatem possimus. Officia qui minima iusto labore aut suscipit, rerum itaque veritatis dicta. Perspiciatis, facilis animi?</li>
+                <li>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aliquid, pariatur id ipsum rem iure minima doloribus.</li>
+                <li>Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis exercitationem, recusandae autem inventore.</li>
                 <li>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Consequuntur enim est odio eaque.</li>
-                <li>Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas libero fugit, mollitia repellat corrupti consequuntur? Nobis excepturi reiciendis repellendus.</li>
+                <li>Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas libero fugit, mollitia repellat corrupti consequuntur?</li>
                 <li>Bon appetit!</li>
             </ol>
-            <li>
-                <input type="checkbox">
-                <label for="agree">I have read and agreed to the rules and guidelines</label>
-            </li>
+            <ul>
+                <li>
+                    <input type="checkbox" id="agree" required>
+                    <label for="agree">I have read and agreed to the rules and guidelines</label>
+                </li>
+            </ul>
         </div>
-
-
     </main>
     
-
     <footer>
         <section class="footer-left">
             <h2>Subscribe to Our Newsletter</h2>
-            <p>Stay updated with the latest recipes, cooking tips, and exclusive offers by subscribing to our newsletter.</p>
+            <p>Stay updated with the latest recipes, cooking tips, and exclusive offers.</p>
             <form action="">
                 <input type="email" name="email" id="email" placeholder="Enter your email address">
                 <button type="submit" id="submit">Subscribe</button>
@@ -196,8 +262,6 @@
             <a href="contact.html">Contact</a>
             <a href="blog.html">News</a>
             <a href="#">Trademarks</a>
-            <a href="#"></a>
-            <a href="#"></a>
         </section>
         <p class="copyright">&copy; BiteByte 2026</p>
     </footer>
