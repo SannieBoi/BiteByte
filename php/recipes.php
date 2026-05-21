@@ -321,7 +321,7 @@ $recipes = $stmt->fetchAll();
                                 </div>
                                 <div class="action">
                                     <button type="button" class="act heart"><i class="fa-regular fa-heart"></i></button>
-                                    <a href="primer.php?id=<?php echo $recipe['RecipesID']; ?>" class="page">View recipe</a>
+                                    <a href="details.php?id=<?php echo $recipe['RecipesID']; ?>" class="page">View recipe</a>
                                     <button type="button" class="act share"><i class="fa-solid fa-share-nodes"></i></button>
                                 </div>
                             </div>
