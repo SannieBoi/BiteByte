@@ -19,6 +19,11 @@ main{
     background-color:#ffebcd;
 
     overflow-y:auto;
+    scrollbar-width:none;
+
+    &::-webkit-scrollbar{
+        display:none;
+    }
 
     .choice{
         margin:2rem 0rem;
@@ -134,7 +139,7 @@ main{
 }
 
 .action{
-    margin-top:auto;
+    margin-top:1.5rem;
     margin-bottom:-0.5rem;
 
     height:3.5rem;
@@ -180,7 +185,7 @@ main{
 }
 
 .bottom{
-    margin-top: 1rem;
+    margin-top:auto;
 }
 
 input[type="checkbox"]{
@@ -189,6 +194,13 @@ input[type="checkbox"]{
 
 input[type="range"]{
     width:12rem;
+}
+
+/* Pots label fixed width so it doesn't shift layout */
+#pots_label{
+    display:inline-block;
+    width:2rem;
+    text-align:center;
 }
 
 .filter-toggle{
@@ -200,6 +212,31 @@ input[type="range"]{
 }
 .filter-close{
     display: none;
+}
+
+/* Star/bulb icon swap - solid when active, regular otherwise */
+.rating-select label i,
+.diff-select label i {
+    font-family: "Font Awesome 6 Free";
+    font-weight: 400; /* regular by default */
+}
+
+.rating-select input:checked ~ label i,
+.rating-select label:hover i,
+.rating-select label:hover ~ label i {
+    font-weight: 900; /* solid star on fill */
+}
+
+/* Bulb uses fa-solid always but we switch the icon class via CSS trick -
+   we hide the regular and show solid using content override */
+.diff-select label .fa-lightbulb{
+    font-weight:400;
+}
+
+.diff-select input:checked ~ label .fa-lightbulb,
+.diff-select label:hover .fa-lightbulb,
+.diff-select label:hover ~ label .fa-lightbulb{
+    font-weight:900;
 }
 
 @media (max-width:768px){
@@ -370,21 +407,19 @@ input[type="range"]{
         max-width:100%;
     }
 }
+
 .sort-container { margin-bottom: 20px; display: flex; justify-content: flex-end; align-items: center; gap: 10px; width: 100%; padding-right: 20px; }
-        .sort-container select { padding: 8px 12px; border-radius: 6px; border: 1px solid #ccc; font-family: 'Roboto', sans-serif; }
-        .user-welcome { font-weight: bold; color: #ff5e62; margin-right: 10px; }
-        .filter-apply-btn { background: #ff5e62; color: white; border: none; padding: 10px; width: 100%; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 15px; }
-        .filter-apply-btn:hover { background: #ff4146; }
-        
-        /* CSS ZA SELEKCIJU SIJALICA I ZVEZDICA */
-        .rating-select, .diff-select { display: flex; flex-direction: row-reverse; justify-content: flex-end; align-items: center; gap: 5px; width: 100%; }
-        .rating-select input, .diff-select input { display: none; }
-        .rating-select label, .diff-select label { cursor: pointer; font-size: 1.2rem; color: #ccc; transition: color 0.2s; }
-        
-        /* Kada je čekiran radio dugme, oboji sve sijalice/zvezdice pre njega (zbog row-reverse) */
-        .rating-select input:checked ~ label, .rating-select label:hover, .rating-select label:hover ~ label { color: #ffca28; }
-        .diff-select input:checked ~ label, .diff-select label:hover, .diff-select label:hover ~ label { color: #ff5e62; }
-        
-        /* Stil za Clear dugme koje je sada skroz desno */
-        .clear-label { font-size: 0.85rem; color: #888; margin-left: auto; order: -1; padding-left: 10px; }
-        .clear-label:hover { color: #ff5e62; }
+.sort-container select { padding: 8px 12px; border-radius: 6px; border: 1px solid #ccc; font-family: 'Roboto', sans-serif; }
+.user-welcome { font-weight: bold; color: #ff5e62; margin-right: 10px; }
+.filter-apply-btn { background: #ff5e62; color: white; border: none; padding: 10px; width: 100%; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 15px; margin-bottom: 2rem; }
+.filter-apply-btn:hover { background: #ff4146; }
+
+.rating-select, .diff-select { display: flex; flex-direction: row-reverse; justify-content: flex-end; align-items: center; gap: 5px; width: 100%; }
+.rating-select input, .diff-select input { display: none; }
+.rating-select label, .diff-select label { cursor: pointer; font-size: 1.2rem; color: #ccc; transition: color 0.2s; }
+
+.rating-select input:checked ~ label, .rating-select label:hover, .rating-select label:hover ~ label { color: #ffca28; }
+.diff-select input:checked ~ label, .diff-select label:hover, .diff-select label:hover ~ label { color: #ff5e62; }
+
+.clear-label { font-size: 0.85rem; color: #888; margin-left: auto; order: -1; padding-left: 10px; }
+.clear-label:hover { color: #ff5e62; }
