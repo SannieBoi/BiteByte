@@ -29,7 +29,6 @@ $query = "SELECT r.*,
           WHERE 1=1";
 $params = [];
 
-
 if ($search_term !== '') {
     $query .= " AND r.Title LIKE ?";
     $params[] = "%$search_term%";
@@ -50,7 +49,6 @@ if ($rating !== '') {
 
 if (!empty($selected_time_ranges)) {
     $time_conditions = [];
-    
     foreach ($selected_time_ranges as $range) {
         if ($range === 'less_10') {
             $time_conditions[] = "r.TimeNeeded < 10";
@@ -64,7 +62,6 @@ if (!empty($selected_time_ranges)) {
             $time_conditions[] = "r.TimeNeeded > 120";
         }
     }
-    
     if (!empty($time_conditions)) {
         $query .= " AND (" . implode(" OR ", $time_conditions) . ")";
     }
@@ -116,28 +113,11 @@ $recipes = $stmt->fetchAll();
     <link rel="stylesheet" href="../css/recipes.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
     <script src="../js/script.js"></script>
+    <script src="../js/recipes.js" defer></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@100..900&family=Roboto:wght@100..900&display=swap" rel="stylesheet">
-    
-    <style>
-        .sort-container { margin-bottom: 20px; display: flex; justify-content: flex-end; align-items: center; gap: 10px; width: 100%; padding-right: 20px; }
-        .sort-container select { padding: 8px 12px; border-radius: 6px; border: 1px solid #ccc; font-family: 'Roboto', sans-serif; }
-        .user-welcome { font-weight: bold; color: #ff5e62; margin-right: 10px; }
-        .filter-apply-btn { background: #ff5e62; color: white; border: none; padding: 10px; width: 100%; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 15px; }
-        .filter-apply-btn:hover { background: #ff4146; }
-        
-        .rating-select, .diff-select { display: flex; flex-direction: row-reverse; justify-content: flex-end; align-items: center; gap: 5px; width: 100%; }
-        .rating-select input, .diff-select input { display: none; }
-        .rating-select label, .diff-select label { cursor: pointer; font-size: 1.2rem; color: #ccc; transition: color 0.2s; }
-        
-        .rating-select input:checked ~ label, .rating-select label:hover, .rating-select label:hover ~ label { color: #ffca28; }
-        .diff-select input:checked ~ label, .diff-select label:hover, .diff-select label:hover ~ label { color: #ff5e62; }
-        
-        .clear-label { font-size: 0.85rem; color: #888; margin-left: auto; order: -1; padding-left: 10px; }
-        .clear-label:hover { color: #ff5e62; }
-    </style>
 </head>
 <body>
     <header>
@@ -210,9 +190,8 @@ $recipes = $stmt->fetchAll();
                         <div class="diff-select">
                             <?php for($i=5; $i>=1; $i--): ?>
                                 <input type="radio" name="difficulty" value="<?php echo $i; ?>" id="diff-<?php echo $i; ?>" <?php echo (int)$difficulty === $i ? 'checked' : ''; ?>>
-                                <label for="diff-<?php echo $i; ?>"><i class="fa-solid fa-lightbulb"></i></label>
+                                <label for="diff-<?php echo $i; ?>"><i class="fa-regular fa-lightbulb"></i></label>
                             <?php endfor; ?>
-                            
                             <input type="radio" name="difficulty" value="" id="diff-all" <?php echo $difficulty === '' ? 'checked' : ''; ?>>
                             <label for="diff-all" class="clear-label">Clear</label>
                         </div>
@@ -223,9 +202,8 @@ $recipes = $stmt->fetchAll();
                         <div class="rating-select">
                             <?php for($i=5; $i>=1; $i--): ?>
                                 <input type="radio" name="rating" value="<?php echo $i; ?>" id="rat-<?php echo $i; ?>" <?php echo (int)$rating === $i ? 'checked' : ''; ?>>
-                                <label for="rat-<?php echo $i; ?>"><i class="fa-solid fa-star"></i></label>
+                                <label for="rat-<?php echo $i; ?>"><i class="fa-regular fa-star"></i></label>
                             <?php endfor; ?>
-                            
                             <input type="radio" name="rating" value="" id="rat-all" <?php echo $rating === '' ? 'checked' : ''; ?>>
                             <label for="rat-all" class="clear-label">Clear</label>
                         </div>
@@ -335,5 +313,11 @@ $recipes = $stmt->fetchAll();
             </div>
         </form> 
     </main>
+
+    <!-- Mobile filter toggle button -->
+    <button class="filter-toggle" aria-label="Open filters">
+        <i class="fa-solid fa-sliders"></i>
+    </button>
+
 </body>
 </html>
