@@ -1,15 +1,12 @@
 <?php
-// 1. POVEZIVANJE NA BAZU I SESIJA
 include 'config.php';
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Inicijalizacija search_term promenljive za header da ne baca grešku
 $search_term = $_GET['search'] ?? '';
 
-// Ako korisnik nije ulogovan, odmah ga preusmeri na login.php
 if (!isset($_SESSION['UsersID'])) {
     header("Location: login.php");
     exit();
@@ -18,7 +15,6 @@ if (!isset($_SESSION['UsersID'])) {
 $trenutni_user_id = $_SESSION['UsersID'];
 $poruka = "";
 
-// 2. PREUZIMANJE KATEGORIJA I TAGOVA ZA PRIKAZ U FORMI
 try {
     $all_categories = $pdo->query("SELECT * FROM categories ORDER BY Name ASC")->fetchAll();
     $all_tags = $pdo->query("SELECT * FROM tags ORDER BY Name ASC")->fetchAll();
@@ -26,34 +22,29 @@ try {
     die("Greška pri čitanju kategorija/tagova: " . $e->getMessage());
 }
 
-// 3. OBRADA FORME NAKON KLIKA NA SUBMIT
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = $_POST['name'] ?? '';
     $pots = isset($_POST['pots']) ? (int)$_POST['pots'] : 0;
     $diff = isset($_POST['diff']) ? (int)$_POST['diff'] : 1;
     $time_needed = isset($_POST['time_needed']) ? (int)$_POST['time_needed'] : 0;
-    $description = $_POST['description'] ?? ''; // Umesto ingredients, hvatamo opis
+    $description = $_POST['description'] ?? ''; 
     $recipe_text = $_POST['recipe'] ?? '';
     
     $selected_categories = $_POST['category'] ?? [];
     $selected_tags = $_POST['tags'] ?? [];
 
-    // Osnovna validacija
     if (empty($title) || $time_needed <= 0 || empty($recipe_text)) {
         $poruka = "<p style='color: red;'>Molimo popunite sva obavezna polja (Naziv, Vreme, Recept).</p>";
     } else {
-        // Logika za upload slike
-        $image_name = "default.png"; // Ako korisnik ne izabere sliku
+        $image_name = "default.png";
         if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
             $file_tmp = $_FILES['photo']['tmp_name'];
             $original_name = $_FILES['photo']['name'];
             $ext = pathinfo($original_name, PATHINFO_EXTENSION);
             
-            // Kreiramo unikatno ime fajla da se ne bi prebrisale slike sa istim imenom
             $image_name = time() . "_" . uniqid() . "." . $ext;
             $target_dir = "../img/recipe_images/";
             
-            // Napravi direktorijum ako ne postoji
             if (!is_dir($target_dir)) {
                 mkdir($target_dir, 0777, true);
             }
@@ -62,19 +53,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         try {
-            // Pokrećemo transakciju
             $pdo->beginTransaction();
 
-            // Umetanje u tabelu 'recipes' (zajedno sa Description i Instructions)
             $sql_recipe = "INSERT INTO recipes (Title, ImageURL, TimeNeeded, PotsNum, Difficulty, Rating, Description, Instructions, UsersID) 
                            VALUES (?, ?, ?, ?, ?, 1, ?, ?, ?)";
             $stmt = $pdo->prepare($sql_recipe);
             $stmt->execute([$title, $image_name, $time_needed, $pots, $diff, $description, $recipe_text, $trenutni_user_id]);
             
-            // Uzimamo ID recepta koji je upravo generisan u bazi
             $novi_recipe_id = $pdo->lastInsertId();
-
-            // Umetanje u veznu tabelu 'recipescat'
             if (!empty($selected_categories)) {
                 $sql_cat = "INSERT INTO recipescat (RecipesID, CategoriesID) VALUES (?, ?)";
                 $stmt_cat = $pdo->prepare($sql_cat);
@@ -82,8 +68,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmt_cat->execute([$novi_recipe_id, (int)$cat_id]);
                 }
             }
-
-            // Umetanje u veznu tabelu 'recipestag'
             if (!empty($selected_tags)) {
                 $sql_tag = "INSERT INTO recipestag (RecipesID, TagsID) VALUES (?, ?)";
                 $stmt_tag = $pdo->prepare($sql_tag);
@@ -92,7 +76,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
 
-            // Potvrđujemo izmene u bazi
             $pdo->commit();
             $poruka = "<p style='color: green; margin-left: 5em; font-weight: bold;'>Recipe submitted successfully!</p>";
             

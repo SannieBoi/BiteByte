@@ -1,10 +1,9 @@
 <?php
-// 1. Uključujemo config.php za PDO konekciju
 require_once 'config.php';
 
 try {
-    // 2. Izvlačimo slike iz baze (LIMIT 10 jer heroImages niz u JS-u ima 10 slika)
-    $sql = "SELECT ImageURL FROM recipes LIMIT 10"; // Promeni 'Image' ako ti se kolona u bazi zove drugačije
+    
+    $sql = "SELECT ImageURL FROM recipes LIMIT 10"; 
     $stmt = $pdo->query($sql);
     $slike_iz_baze = $stmt->fetchAll(PDO::FETCH_COLUMN);
 } 
@@ -12,7 +11,6 @@ catch (PDOException $e) {
     die("Greška pri izvršavanju upita: " . $e->getMessage());
 }
 
-// Ako je baza prazna, pravimo "fallback" sa starim putanjama da sajt ne pukne
 if (empty($slike_iz_baze)) {
     $slike_iz_baze = [
         "food1.jpg", "food2.jpg", "food3.jpg", "food4.jpg", "food5.jpg",
@@ -20,13 +18,12 @@ if (empty($slike_iz_baze)) {
     ];
 }
 
-// 3. Sređujemo putanje da vode u ispravan folder: ../img/recipe_images/
 $konacne_slike = [];
 foreach ($slike_iz_baze as $slika) {
     $konacne_slike[] = "../img/recipe_images/" . $slika;
 }
 
-// Uzimamo prvih 8 slika za karusel
+
 $karusel_slike = array_slice($konacne_slike, 0, 8);
 ?>
 <!DOCTYPE html>
@@ -138,13 +135,10 @@ $karusel_slike = array_slice($konacne_slike, 0, 8);
     </footer>
 
     <script>
-        // Kada se stranica učita, pre nego što drugarov kod krene da vrti slike, zamenjujemo njegov niz našim nizom iz baze
         window.addEventListener('DOMContentLoaded', () => {
-            // PHP ubacuje nizove ovde nevidljivo za JS greške
             const php_hero = <?php echo json_encode($konacne_slike); ?>;
             const php_karusel = <?php echo json_encode($karusel_slike); ?>;
 
-            // Na silu menjamo izvor slika u drugarovom kodu ako pokuša da povuče stare
             if (typeof heroImages !== 'undefined') {
                 heroImages.length = 0;
                 heroImages.push(...php_hero);
@@ -155,19 +149,13 @@ $karusel_slike = array_slice($konacne_slike, 0, 8);
     <script src="../js/index.js"></script>
 
     <script>
-        // Pošto buildDOM u index.js koristi fiksni SRCS niz, prepisaćemo SRCS niz u memoriji pre nego što se funkcije izvrše
-        // Ali pošto je u index.js const, JavaScript nam dozvoljava da izmenimo sadržaj niza, pod uslovom da ga uhvatimo na vreme.
-        // Pošto se učitao index.js, pokrenućemo buildDOM ponovo ali sa našim slikama!
         
         if (typeof SRCS !== 'undefined') {
-            // Ispraznimo njegove stare slike iz niza i ubacimo naše iz baze
             SRCS.length = 0; 
             SRCS.push(...<?php echo json_encode($karusel_slike); ?>);
             
-            // Ponovo pokrećemo drugarovu funkciju da osveži slike na ekranu
             if (typeof buildDOM === 'function') {
                 buildDOM();
-                // Ponovo centriramo karusel kako je on zamislio
                 const trackElement = document.querySelector(".showcase-track");
                 if (typeof computeTranslate === 'function' && typeof BUFFER !== 'undefined') {
                     trackElement.style.transition = "none";
@@ -177,8 +165,6 @@ $karusel_slike = array_slice($konacne_slike, 0, 8);
                 }
             }
         }
-        
-        // Menjamo i gornju sliku da bude iz našeg niza
         const heroImg = document.getElementById("week-food");
         const php_hero_slike = <?php echo json_encode($konacne_slike); ?>;
         if(heroImg) {

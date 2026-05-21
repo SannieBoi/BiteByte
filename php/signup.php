@@ -1,5 +1,4 @@
 <?php
-// 1. Uključujemo tvoju PDO konekciju
 require_once 'config.php';
 
 if (session_status() === PHP_SESSION_NONE) {
@@ -9,16 +8,12 @@ if (session_status() === PHP_SESSION_NONE) {
 $error_msg = "";
 $success_msg = "";
 
-// 2. Proveravamo da li je korisnik poslao formu preko POST metode
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    
-    // Kupimo podatke iz forme
     $email = trim($_POST['email'] ?? '');
     $username = trim($_POST['username'] ?? '');
     $password = $_POST['password'] ?? '';
     $confirm_password = $_POST['confirm-password'] ?? '';
 
-    // 3. Backend validacija u PHP-u
     if (empty($email) || empty($username) || empty($password) || empty($confirm_password)) {
         $error_msg = "Molimo vas da popunite sva polja.";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -27,7 +22,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error_msg = "Lozinke se ne podudaraju.";
     } else {
         try {
-            // 4. Provera duplikata u bazi
             $check_sql = "SELECT Username, Email FROM users WHERE Username = :username OR Email = :email";
             $check_stmt = $pdo->prepare($check_sql);
             $check_stmt->execute([
@@ -38,10 +32,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($check_stmt->rowCount() > 0) {
                 $error_msg = "Korisničko ime ili email su već u upotrebi.";
             } else {
-                // 5. Hašovanje lozinke
                 $hashed_password = password_hash($password, PASSWORD_BCRYPT);
 
-                // 6. Upis u bazu podataka (Tvoje kolone: Username, Email, Pass, RegDate)
                 $insert_sql = "INSERT INTO users (Username, Email, Pass, RegDate) VALUES (:username, :email, :pass, NOW())";
                 $insert_stmt = $pdo->prepare($insert_sql);
                 
@@ -51,7 +43,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'pass'     => $hashed_password
                 ]);
 
-                // Odmah ga šaljemo na login.php bez čekanja i blokiranja
                 header("Location: login.php");
                 exit;
             }

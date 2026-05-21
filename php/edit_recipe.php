@@ -1,16 +1,12 @@
 <?php
-// 1. POVEZIVANJE NA BAZU I SESIJA
 include 'config.php';
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-
-// Inicijalizacija search_term promenljive za header da ne baca grešku
 $search_term = $_GET['search'] ?? '';
 $poruka = "";
 
-// 2. PROVERA DA LI JE PROSLEĐEN ID RECEPTA ZA IZMENU
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     header("Location: recipes.php");
     exit();
@@ -18,7 +14,6 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 
 $recipe_id = (int)$_GET['id'];
 
-// 3. DOVLAČENJE TRENUTNIH PODATAKA O RECEPTU ZA VALIDACIJU I POPUNJAVANJE FORME
 try {
     $stmt = $pdo->prepare("SELECT * FROM recipes WHERE RecipesID = ?");
     $stmt->execute([$recipe_id]);
@@ -28,13 +23,10 @@ try {
         die("Recipe not found.");
     }
 
-    // 4. BEZBEDNOSNA PROVERA AUTORIZACIJE (BiteByte tim ili Vlasnik)
     $has_permission = false;
     if (!isset($_SESSION['UsersID'])) {
-        // Niko nije ulogovan -> Podrazumeva se BiteByte tim
         $has_permission = true;
     } else {
-        // Korisnik je ulogovan -> Mora biti vlasnik recepta
         if ((int)$_SESSION['UsersID'] === (int)$recipe['UsersID']) {
             $has_permission = true;
         }
@@ -44,11 +36,9 @@ try {
         die("<h2 style='color:red; text-align:center; margin-top:2em;'>You do not have permission to edit this recipe!</h2>");
     }
 
-    // 5. PREUZIMANJE SVIH KATEGORIJA I TAGOVA (ZA PRIKAZ U LISTI)
     $all_categories = $pdo->query("SELECT * FROM categories ORDER BY Name ASC")->fetchAll();
     $all_tags = $pdo->query("SELECT * FROM tags ORDER BY Name ASC")->fetchAll();
 
-    // 6. PREUZIMANJE ID-JEVA TRENUTNO ČEKIRANIH KATEGORIJA I TAGOVA ZA OVAJ RECEPT
     $current_cats_stmt = $pdo->prepare("SELECT CategoriesID FROM recipescat WHERE RecipesID = ?");
     $current_cats_stmt->execute([$recipe_id]);
     $current_categories = $current_cats_stmt->fetchAll(PDO::FETCH_COLUMN);
@@ -61,7 +51,6 @@ try {
     die("Greška pri čitanju podataka: " . $e->getMessage());
 }
 
-// 7. OBRADA FORME NAKON KLIKA NA SUBMIT (ZAPRAVO UPDATE)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = $_POST['name'] ?? '';
     $pots = isset($_POST['pots']) ? (int)$_POST['pots'] : 1;
@@ -76,7 +65,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($title) || $time_needed <= 0 || empty($recipe_text)) {
         $poruka = "<p style='color: red;'>Molimo popunite sva obavezna polja (Naziv, Vreme, Recept).</p>";
     } else {
-        // Logika za upload slike (zadržava staru ako nova nije izabrana)
         $image_name = $recipe['ImageURL']; 
         
         if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
@@ -97,13 +85,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $pdo->beginTransaction();
 
-            // SQL UPDATE umesto INSERT
             $sql_update = "UPDATE recipes SET Title = ?, ImageURL = ?, TimeNeeded = ?, PotsNum = ?, Difficulty = ?, Description = ?, Instructions = ? 
                            WHERE RecipesID = ?";
             $stmt = $pdo->prepare($sql_update);
             $stmt->execute([$title, $image_name, $time_needed, $pots, $diff, $description, $recipe_text, $recipe_id]);
             
-            // Osvežavanje kategorija: Prvo obrišemo stare veze, pa upišemo nove
             $pdo->prepare("DELETE FROM recipescat WHERE RecipesID = ?")->execute([$recipe_id]);
             if (!empty($selected_categories)) {
                 $sql_cat = "INSERT INTO recipescat (RecipesID, CategoriesID) VALUES (?, ?)";
@@ -112,8 +98,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmt_cat->execute([$recipe_id, (int)$cat_id]);
                 }
             }
-
-            // Osvežavanje tagova: Prvo obrišemo stare veze, pa upišemo nove
             $pdo->prepare("DELETE FROM recipestag WHERE RecipesID = ?")->execute([$recipe_id]);
             if (!empty($selected_tags)) {
                 $sql_tag = "INSERT INTO recipestag (RecipesID, TagsID) VALUES (?, ?)";
@@ -124,8 +108,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             $pdo->commit();
-            
-            // Osvežavamo lokalnu varijablu $recipe da bi HTML odmah prikazao nove podatke
             header("Location: primer.php?id=" . $recipe_id);
             exit();
 

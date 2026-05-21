@@ -1,27 +1,23 @@
 <?php
-// 1. POVEZIVANJE NA BAZU I SESIJA
 include 'config.php';
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Dinamičko preuzimanje svih kategorija i tagova iz baze za filtere
 $all_categories = $pdo->query("SELECT * FROM categories ORDER BY Name ASC")->fetchAll();
 $all_tags = $pdo->query("SELECT * FROM tags ORDER BY Name ASC")->fetchAll();
 
-// 2. KUPLJENJE PARAMETARA IZ URL-a
 $search_term = $_GET['search'] ?? '';
-$pots_needed = isset($_GET['pots']) ? (int)$_GET['pots'] : 15; // Default je max (15) da prikaže sve
+$pots_needed = isset($_GET['pots']) ? (int)$_GET['pots'] : 15;
 $sort_by     = $_GET['sort'] ?? '';
-$difficulty  = $_GET['difficulty'] ?? ''; // Može biti 1-5
-$rating      = $_GET['rating'] ?? '';     // Može biti 1-5
+$difficulty  = $_GET['difficulty'] ?? ''; 
+$rating      = $_GET['rating'] ?? '';     
 
 $selected_categories  = $_GET['category'] ?? [];
 $selected_tags        = $_GET['tags'] ?? [];
-$selected_time_ranges = $_GET['time_ranges'] ?? []; // Niz čekiranih opsega vremena
+$selected_time_ranges = $_GET['time_ranges'] ?? []; 
 
-// 3. DINAMIČKO SPREMANJE SQL UPITA
 $query = "SELECT r.*, 
                  GROUP_CONCAT(DISTINCT c.Name SEPARATOR ', ') AS CategoryList,
                  GROUP_CONCAT(DISTINCT t.Name SEPARATOR ', ') AS TagList
@@ -33,29 +29,25 @@ $query = "SELECT r.*,
           WHERE 1=1";
 $params = [];
 
-// Pretraga po nazivu
+
 if ($search_term !== '') {
     $query .= " AND r.Title LIKE ?";
     $params[] = "%$search_term%";
 }
 
-// Šerpe: MAKSIMALNO toliko šerpi
 $query .= " AND r.PotsNum <= ?";
 $params[] = $pots_needed;
 
-// Težina (Difficulty)
 if ($difficulty !== '') {
     $query .= " AND r.Difficulty = ?";
     $params[] = (int)$difficulty;
 }
 
-// Ocena (Rating)
 if ($rating !== '') {
     $query .= " AND r.Rating >= ?";
     $params[] = (int)$rating;
 }
 
-// NOVO: Filtriranje po vremenu pripreme (Time to prepare)
 if (!empty($selected_time_ranges)) {
     $time_conditions = [];
     
@@ -73,13 +65,11 @@ if (!empty($selected_time_ranges)) {
         }
     }
     
-    // Spajamo sve izabrane opsege sa OR (npr. kraće od 10 min ILI između 10 i 30 min)
     if (!empty($time_conditions)) {
         $query .= " AND (" . implode(" OR ", $time_conditions) . ")";
     }
 }
 
-// Filtriranje po kategorijama
 if (!empty($selected_categories)) {
     $in_placeholder = implode(',', array_fill(0, count($selected_categories), '?'));
     $query .= " AND r.RecipesID IN (
@@ -90,7 +80,6 @@ if (!empty($selected_categories)) {
     }
 }
 
-// Filtriranje po tagovima
 if (!empty($selected_tags)) {
     $in_placeholder = implode(',', array_fill(0, count($selected_tags), '?'));
     $query .= " AND r.RecipesID IN (
@@ -101,10 +90,8 @@ if (!empty($selected_tags)) {
     }
 }
 
-// Grupisanje zbog GROUP_CONCAT
 $query .= " GROUP BY r.RecipesID";
 
-// 4. SORTIRANJE
 if ($sort_by === 'time_asc') {
     $query .= " ORDER BY r.TimeNeeded ASC";
 } elseif ($sort_by === 'time_desc') {
@@ -115,7 +102,6 @@ if ($sort_by === 'time_asc') {
     $query .= " ORDER BY r.RecipesID DESC";
 }
 
-// Izvršavanje
 $stmt = $pdo->prepare($query);
 $stmt->execute($params);
 $recipes = $stmt->fetchAll();
@@ -142,7 +128,6 @@ $recipes = $stmt->fetchAll();
         .filter-apply-btn { background: #ff5e62; color: white; border: none; padding: 10px; width: 100%; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 15px; }
         .filter-apply-btn:hover { background: #ff4146; }
         
-        /* CSS ZA SELEKCIJU SIJALICA I ZVEZDICA */
         .rating-select, .diff-select { display: flex; flex-direction: row-reverse; justify-content: flex-end; align-items: center; gap: 5px; width: 100%; }
         .rating-select input, .diff-select input { display: none; }
         .rating-select label, .diff-select label { cursor: pointer; font-size: 1.2rem; color: #ccc; transition: color 0.2s; }

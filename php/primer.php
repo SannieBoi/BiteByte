@@ -1,12 +1,10 @@
 <?php
-// 1. POVEZIVANJE NA BAZU I SESIJA
 include 'config.php';
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// 2. PROVERA DA LI JE PROSLEĐEN ID RECEPTA
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     header("Location: recipes.php");
     exit();
@@ -14,7 +12,6 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 
 $recipe_id = (int)$_GET['id'];
 
-// 3. DOVLAČENJE GLAVNIH PODATAKA O RECEPTU I AUTORU
 $query = "SELECT r.*, u.Username FROM recipes r 
           LEFT JOIN users u ON r.UsersID = u.UsersID 
           WHERE r.RecipesID = ?";
@@ -26,20 +23,16 @@ if (!$recipe) {
     die("Recipe not found.");
 }
 
-// 4. PROVERA AUTORIZACIJE (BiteByte tim ili Vlasnik recepta)
 $has_permission = false;
 
 if (!isset($_SESSION['UsersID'])) {
-    // Niko nije ulogovan -> Podrazumeva se BiteByte tim (puni pristup)
     $has_permission = true;
 } else {
-    // Korisnik je ulogovan -> Proveravamo da li njegov ID odgovara autoru recepta
     if ((int)$_SESSION['UsersID'] === (int)$recipe['UsersID']) {
         $has_permission = true;
     }
 }
 
-// 5. DOVLAČENJE KATEGORIJA ZA OVAJ RECEPT
 $cat_query = "SELECT c.Name FROM categories c 
               JOIN recipescat rc ON c.CategoriesID = rc.CategoriesID 
               WHERE rc.RecipesID = ?";
@@ -47,7 +40,6 @@ $cat_stmt = $pdo->prepare($cat_query);
 $cat_stmt->execute([$recipe_id]);
 $categories = $cat_stmt->fetchAll(PDO::FETCH_COLUMN);
 
-// 6. DOVLAČENJE TAGOVA ZA OVAJ RECEPT
 $tag_query = "SELECT t.Name FROM tags t 
               JOIN recipestag rt ON t.TagsID = rt.TagsID 
               WHERE rt.RecipesID = ?";
@@ -180,14 +172,9 @@ $tags = $tag_stmt->fetchAll(PDO::FETCH_COLUMN);
                     <h3>Instructions:</h3>
                     <p>
                         <?php 
-                        // 1. Čistimo tekst od XSS-a
-                        $safe_instructions = htmlspecialchars($recipe['Instructions']);
-                        
-                        // 2. Menjamo uspravnu crtu '|' sa običnim PHP novim redom (\n)
-                        $normalized_text = str_replace('|', "\n", $safe_instructions);
-                        
-                        // 3. nl2br pretvara sve obične nove redove (i stare i nove) u HTML <br> tagove
-                        echo nl2br($normalized_text); 
+                            $safe_instructions = htmlspecialchars($recipe['Instructions']);
+                            $normalized_text = str_replace('|', "\n", $safe_instructions);
+                            echo nl2br($normalized_text); 
                         ?>
                     </p>
                 </div>

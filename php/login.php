@@ -1,41 +1,27 @@
 <?php
-// 1. Uključujemo config.php za PDO konekciju
 require_once 'config.php';
 
-// 2. Pokrećemo sesiju
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
 $error_msg = "";
 
-// 3. Proveravamo da li je forma poslata
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
-
     if (empty($email) || empty($password)) {
         $error_msg = "Molimo vas da popunite sva polja.";
     } else {
         try {
-            // 4. Tražimo korisnika u bazi preko email-a
             $sql = "SELECT UsersID, Username, Pass FROM users WHERE Email = :email";
             $stmt = $pdo->prepare($sql);
             $stmt->execute(['email' => $email]);
-            
             $user = $stmt->fetch();
-
-            // 5. Provera lozinke (upoređivanje čistog teksta sa bcrypt hašom)
             if ($user && password_verify($password, $user['Pass'])) {
-                
-                // POPRAVLJENO: Ključ je promenjen u 'UsersID' da se poklapa sa submit.php i bazom podataka
                 $_SESSION['UsersID']   = $user['UsersID'];
                 $_SESSION['username']  = $user['Username'];
-                
                 session_regenerate_id(true);
-
-                // Preusmeravamo korisnika odmah na submit.php da proveri formu
                 header("Location: submit.php");
                 exit;
                 
