@@ -259,8 +259,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <section class="footer-right">
             <a href="#">Terms of service</a>
             <a href="#">Privacy policy</a>
-            <a href="contact.html">Contact</a>
-            <a href="blog.html">News</a>
+            <a href="../html/contact.html">Contact</a>
+            <a href="../html/blog.html">News</a>
             <a href="#">Trademarks</a>
         </section>
         <p class="copyright">&copy; BiteByte 2026</p>
