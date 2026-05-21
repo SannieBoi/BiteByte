@@ -190,7 +190,7 @@ $recipes = $stmt->fetchAll();
                         <div class="diff-select">
                             <?php for($i=5; $i>=1; $i--): ?>
                                 <input type="radio" name="difficulty" value="<?php echo $i; ?>" id="diff-<?php echo $i; ?>" <?php echo (int)$difficulty === $i ? 'checked' : ''; ?>>
-                                <label for="diff-<?php echo $i; ?>"><i class="fa-regular fa-lightbulb"></i></label>
+                                <label for="diff-<?php echo $i; ?>"><i class="fa-solid fa-lightbulb"></i></label>
                             <?php endfor; ?>
                             <input type="radio" name="difficulty" value="" id="diff-all" <?php echo $difficulty === '' ? 'checked' : ''; ?>>
                             <label for="diff-all" class="clear-label">Clear</label>
@@ -202,7 +202,7 @@ $recipes = $stmt->fetchAll();
                         <div class="rating-select">
                             <?php for($i=5; $i>=1; $i--): ?>
                                 <input type="radio" name="rating" value="<?php echo $i; ?>" id="rat-<?php echo $i; ?>" <?php echo (int)$rating === $i ? 'checked' : ''; ?>>
-                                <label for="rat-<?php echo $i; ?>"><i class="fa-regular fa-star"></i></label>
+                                <label for="rat-<?php echo $i; ?>"><i class="fa-solid fa-star"></i></label>
                             <?php endfor; ?>
                             <input type="radio" name="rating" value="" id="rat-all" <?php echo $rating === '' ? 'checked' : ''; ?>>
                             <label for="rat-all" class="clear-label">Clear</label>

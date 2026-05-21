@@ -4,22 +4,17 @@ main{
 }
 
 .filter{
-    position:sticky;
-    top:119px;
-
-    align-self:flex-start;
-
-    width:25vw;
-    height:calc(100vh - 119px);
-
-    padding:0rem 3rem;
-
-    justify-items:center;
-
-    background-color:#ffebcd;
-
-    overflow-y:auto;
-    scrollbar-width:none;
+    position: sticky;
+    top: 119px;
+    align-self: flex-start;
+    width: 25vw;
+    height: calc(100vh - 119px);
+    padding: 0rem 3rem;
+    justify-items: center;
+    background-color: #ffebcd;
+    overflow-y: auto;
+    scrollbar-width: none;
+    border-right: 1px solid rgb(46, 46, 46);
 
     &::-webkit-scrollbar{
         display:none;
@@ -35,20 +30,7 @@ main{
         margin-top:0rem;
     }
 
-    &::after{
-        content:"";
-
-        position:absolute;
-
-        right:0;
-        top:50%;
-
-        transform:translateY(-50%);
-
-        height:85%;
-
-        border-right:1px solid rgb(46,46,46);
-    }
+    
 
     li{
         list-style:none;
@@ -75,7 +57,7 @@ main{
 .recept{
     background-color:#ffebcd;
 
-    min-height:42rem;
+    min-height:1rem;
 
     border-radius:2rem;
 
@@ -185,7 +167,7 @@ main{
 }
 
 .bottom{
-    margin-top:auto;
+    margin-top: 2rem;
 }
 
 input[type="checkbox"]{
@@ -215,28 +197,29 @@ input[type="range"]{
 }
 
 /* Star/bulb icon swap - solid when active, regular otherwise */
+
+
+/* Bulb uses fa-solid always but we switch the icon class via CSS trick -
+   we hide the regular and show solid using content override */
+
+
+
+/* Fix icon colors - override the * { color } from styles.css */
 .rating-select label i,
 .diff-select label i {
-    font-family: "Font Awesome 6 Free";
-    font-weight: 400; /* regular by default */
+    color: #ccc;
 }
 
 .rating-select input:checked ~ label i,
 .rating-select label:hover i,
 .rating-select label:hover ~ label i {
-    font-weight: 900; /* solid star on fill */
+    color: #ffca28;
 }
 
-/* Bulb uses fa-solid always but we switch the icon class via CSS trick -
-   we hide the regular and show solid using content override */
-.diff-select label .fa-lightbulb{
-    font-weight:400;
-}
-
-.diff-select input:checked ~ label .fa-lightbulb,
-.diff-select label:hover .fa-lightbulb,
-.diff-select label:hover ~ label .fa-lightbulb{
-    font-weight:900;
+.diff-select input:checked ~ label i,
+.diff-select label:hover i,
+.diff-select label:hover ~ label i {
+    color: #ff5e62;
 }
 
 @media (max-width:768px){
