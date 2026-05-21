@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $pdo->beginTransaction();
 
             $sql_recipe = "INSERT INTO recipes (Title, ImageURL, TimeNeeded, PotsNum, Difficulty, Rating, Description, Instructions, UsersID) 
-                           VALUES (?, ?, ?, ?, ?, 1, ?, ?, ?)";
+                           VALUES (?, ?, ?, ?, ?, 0, ?, ?, ?)";
             $stmt = $pdo->prepare($sql_recipe);
             $stmt->execute([$title, $image_name, $time_needed, $pots, $diff, $description, $recipe_text, $trenutni_user_id]);
             
