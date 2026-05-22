@@ -13,21 +13,14 @@
 main{
     margin:3rem 29rem;
     padding:3rem;
-
     border:1px solid rgba(99,99,99,0.4);
-
     box-shadow:rgba(99,99,99,0.2) 0px 2px 8px 0px;
-
     border-radius:2rem;
-
     div{
         display:flex;
         flex-direction:column;
     }
-
-    input,
-    select,
-    button{
+    input, select, button{
         font-size:1.2rem;
     }
 }
@@ -35,33 +28,23 @@ main{
 .sumbit_btn{
     background-color:var(--primary-color);
     color:white;
-
     text-transform:uppercase;
-
     height:3rem;
     width:12rem;
-
     border:none;
     border-radius:0.8rem;
-
     cursor:pointer;
-
     justify-self:center;
-
     transition:background-color 0.12s ease;
-
     &:hover{
         background-color:var(--secondary-color);
     }
 }
 
-input,
-select{
+input, select{
     border-radius:0.6rem;
     padding:0.7rem;
-
     border:1px solid rgba(99,99,99,0.4);
-
     box-shadow:rgba(99,99,99,0.2) 0px 2px 8px 0px;
 }
 
@@ -76,20 +59,13 @@ select:valid{
 textarea{
     border-radius:0.6rem;
     padding:0.7rem;
-
     border:1px solid rgba(99,99,99,0.4);
-
     box-shadow:rgba(99,99,99,0.2) 0px 2px 8px 0px;
-
     width:100%;
-
     max-width:100%;
-
     min-width:0;
-
     max-height:12lh;
     min-height:8rem;
-
     resize:vertical;
 }
 
@@ -99,48 +75,33 @@ div > label{
 }
 
 @media (max-width:768px){
-
     body{
         overflow-x:hidden;
     }
-
     main{
         width:calc(100vw - 2rem);
-
         margin:1rem auto;
-
         padding:1.5rem;
-
         border-radius:1.2rem;
     }
-
     .h2{
         margin-bottom:2rem;
-
         font-size:1.7rem;
         line-height:1.3;
     }
-
     .support_form{
         gap:1.4rem;
     }
-
     main{
-
-        input,
-        select,
-        textarea,
-        button{
+        input, select, textarea, button{
             font-size:1rem;
             width:100%;
             min-width:0;
         }
     }
-
     .sumbit_btn{
         width:100%;
     }
-
     textarea{
         min-height:10rem;
     }

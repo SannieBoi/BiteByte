@@ -2,9 +2,7 @@ main{
     margin: 3rem 6rem;
     padding: 2rem;
     border:1px solid rgba(99,99,99,0.4);
-
     box-shadow:rgba(99,99,99,0.2) 0px 2px 8px 0px;
-
     border-radius:2rem;
 }
 
@@ -14,7 +12,6 @@ main{
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-
     .head-left {
         flex: 1;
         min-width: 0;
@@ -23,7 +20,6 @@ main{
         justify-content: flex-start;
         align-items: center;
         gap: 1.5rem;
-
         .head-left-text {
             flex: 1;
             min-width: 0;
@@ -35,7 +31,6 @@ main{
                 word-break: break-word;
             }
         }
-
         .head-left-btns {
             display: flex;
             flex-direction: column;
@@ -43,7 +38,6 @@ main{
             flex-shrink: 0;
         }
     }
-
     .head-right {
         display: flex;
         justify-content: flex-end;
@@ -64,15 +58,14 @@ main{
         flex: 1;
         img{
             width:100%;
-            height:100%;
             object-fit:cover;
             object-position:center;
             border:3px solid var(--text-color);
             border-radius:40px;
             display:block;
+            max-height:40rem;
         }
     }
-
     .recipe-right{
         flex: 1;
         line-height: 1.5rem;
@@ -105,7 +98,6 @@ table{
         padding: 0.5rem;
         text-align: left;
     }
-
     th{
         background-color: var(--secondary-color);
         color: white;
@@ -167,21 +159,16 @@ table{
     flex-direction: row-reverse;
     justify-content: flex-end;
     gap: 0.3rem;
-
     input[type="radio"] {
         display: none;
     }
-
     label {
         font-size: 2rem;
         cursor: pointer;
         color: var(--text-color);
         transition: color 0.15s ease;
     }
-
-    input:checked ~ label,
-    label:hover,
-    label:hover ~ label {
+    input:checked ~ label, label:hover, label:hover ~ label {
         color: var(--primary-color);
         .fa-regular { /* swap to solid star on fill */
             font-weight: 900;
@@ -195,38 +182,31 @@ table{
         padding: 1rem;
         border-radius: 1rem;
     }
-
     .head {
         margin: 0.5rem;
         flex-direction: column;
         align-items: flex-start;
         gap: 1rem;
-
         .head-left {
             width: 100%;
             flex-direction: column;
             align-items: flex-start;
-
             .head-left-btns {
                 flex-direction: row;
             }
         }
-
         .head-right {
             width: 100%;
             justify-content: flex-start;
             margin-left: 0;
         }
     }
-
     .recipe-content {
         flex-direction: column;
-
         .recipe-left, .recipe-right {
             width: 100%;
         }
     }
-
     table {
         width: 100%;
         font-size: 0.85rem;

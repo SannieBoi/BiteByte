@@ -36,7 +36,6 @@
     height: 36vh;
     overflow:hidden;
     border-radius:40px;
-
     img{
         width:100%;
         height:100%;
@@ -46,7 +45,6 @@
         border-radius:40px;
         display:block;
     }
-
     &::after{
         content:"";
         position:absolute;
@@ -64,7 +62,6 @@ html, body {
   max-width: 100%;
   overflow-x: clip;
 }
-
 
 #srcka{
     top: 50%;
@@ -85,6 +82,7 @@ html, body {
         text-align: right;
     }
 }
+
 .cta-btn{
     display: inline-block;
     padding: 10px 20px;
@@ -97,8 +95,6 @@ html, body {
         background-color: var(--secondary-color);
     }
 }
-
-
 
 .showcase {
     position: relative;
@@ -116,7 +112,6 @@ html, body {
     align-items: center;
     gap: 6rem;
     height: 100%;
-    /* translateX set by JS */
     transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     will-change: transform;
 }
@@ -125,8 +120,7 @@ html, body {
     flex-shrink: 0;
     width: 16vw;
     height: 28vh;
-    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-                height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
     img {
         width: 100%;
@@ -183,27 +177,25 @@ html, body {
         transform: translateY(-50%) scale(0.95);
     }
 }
+
 .showcase-btn-left {
     left: calc(50% - 320px);
 }
+
 .showcase-btn-right {
     right: calc(50% - 320px);
 }
 
 .hero {
-    /* ... your existing styles ... */
-
     @media (max-width: 768px) {
         flex-direction: column;
         padding: 2rem 1rem;
         align-items: center;
-
         .hero-left {
             align-items: center;
             text-align: center;
             padding: 0;
         }
-
         .hero-right {
             width: 90%;
             height: 250px;
@@ -251,7 +243,6 @@ html, body {
         display: none;
         width: 100% !important;
         height: 100% !important;
-
         &.active {
             display: block;
             width: 100% !important;
@@ -263,7 +254,6 @@ html, body {
                 filter: brightness(1);
             }
         }
-
         &.slide-from-right {
             animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
         }
@@ -322,7 +312,6 @@ html, body {
     @media (max-width: 768px) {
         margin-top: 2rem;
     }
-
     .feature {
         @media (max-width: 768px) {
             max-width: 95vw;
