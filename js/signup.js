@@ -4,8 +4,6 @@ const email           = document.getElementById("email");
 const password        = document.getElementById("password");
 const confirmPassword = document.getElementById("confirm-password");
 
-// ── Password rules definition ─────────────────────────────────────
-
 const passwordRules = [
     { id: "rule-length",  test: v => v.length >= 8,           label: "At least 8 characters"             },
     { id: "rule-upper",   test: v => /[A-Z]/.test(v),         label: "One uppercase letter (A–Z)"         },
@@ -13,8 +11,6 @@ const passwordRules = [
     { id: "rule-number",  test: v => /[0-9]/.test(v),         label: "One number (0–9)"                   },
     { id: "rule-symbol",  test: v => /[^A-Za-z0-9]/.test(v), label: "One symbol (!@#$...)"               },
 ];
-
-// ── Build rules boxes ─────────────────────────────────────────────
 
 function createRulesBox(inputEl, includeStrengthRules = true) {
     const box = document.createElement("div");
@@ -44,9 +40,7 @@ function createRulesBox(inputEl, includeStrengthRules = true) {
 }
 
 const passwordRulesBox = createRulesBox(password);
-const confirmRulesBox  = createRulesBox(confirmPassword, false); // no strength rules
-
-// ── Show / hide ───────────────────────────────────────────────────
+const confirmRulesBox  = createRulesBox(confirmPassword, false);
 
 password.addEventListener("focus",        () => passwordRulesBox.classList.add("visible"));
 password.addEventListener("blur",         () => passwordRulesBox.classList.remove("visible"));
@@ -68,8 +62,6 @@ username.addEventListener("input", () => {
         checkLength(username, 3, 15);
     }
 });
-
-// ── Live rule updates ─────────────────────────────────────────────
 
 password.addEventListener("input", () => {
     updateRules(password.value, password.id);
@@ -100,8 +92,6 @@ function liveCheckMatch() {
     icon.classList.toggle("fa-circle-xmark", !matches);
 }
 
-// ── Form submission ───────────────────────────────────────────────
-
 form.addEventListener("submit", function (e) {
     e.preventDefault();
 
@@ -124,12 +114,9 @@ form.addEventListener("submit", function (e) {
         isPasswordsMatch = checkPasswordsMatch(password, confirmPassword);
 
     if (isRequiredValid && isUsernameValid && isEmailValid && isPasswordValid && isPasswordsMatch) {
-        // Kada je sve 100% ispravno, zaobilazimo preventDefault i guramo formu pravo na PHP obradu
         e.currentTarget.submit();
     }
 });
-
-// ── Validation helpers ────────────────────────────────────────────
 
 function checkRequired(inputArr) {
     let isValid = true;
@@ -149,7 +136,6 @@ function formatFieldName(input) {
         .join(" ");
 }
 
-// Funkcija za prikaz greške (vraća crveni border i poruku)
 function showError(input, message) {
     const formGroup = input.closest(".form-group");
     formGroup.className = "form-group error";
@@ -157,7 +143,6 @@ function showError(input, message) {
     if (small) small.innerText = message;
 }
 
-// Funkcija za prikaz uspeha (vraća zeleni border)
 function showSuccess(input) {
     const formGroup = input.closest(".form-group");
     formGroup.className = "form-group success";
@@ -197,7 +182,6 @@ function checkPasswordStrength(input) {
     return false;
 }
 
-// Provera da li se lozinke poklapaju
 function checkPasswordsMatch(pw, confirm) {
     if (pw.value !== confirm.value) {
         showError(confirm, "Passwords do not match");
