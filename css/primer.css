@@ -170,7 +170,7 @@ table{
     }
     input:checked ~ label, label:hover, label:hover ~ label {
         color: var(--primary-color);
-        .fa-regular { /* swap to solid star on fill */
+        .fa-regular {
             font-weight: 900;
         }
     }
