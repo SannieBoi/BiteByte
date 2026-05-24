@@ -108,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             $pdo->commit();
-            header("Location: primer.php?id=" . $recipe_id);
+            header("Location: details.php?id=" . $recipe_id);
             exit();
 
         } catch (Exception $e) {
@@ -242,7 +242,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 <div>
                     <button type="submit">Save Changes</button>
-                    <a href="primer.php?id=<?php echo $recipe_id; ?>" style="margin-left: 15px; color: #ff5e62; text-decoration: none;">Cancel</a>
+                    <a href="details.php?id=<?php echo $recipe_id; ?>" style="margin-left: 15px; color: #ff5e62; text-decoration: none;">Cancel</a>
                 </div>
             </form>
         </div>
