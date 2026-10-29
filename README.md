@@ -1,8 +1,10 @@
 # BiteByte – recipe-sharing web app
 
-BiteByte is a website where people can share recipes, browse other people's recipes and search and filter them. I built it with a partner as my graduation project (maturski rad) at Gimnazija Svetozar Markovic, Jagodina, in 2026. It was graded 5/5.
+BiteByte is a website where people can share recipes, browse other people's recipes and search and filter them. I built it with a partner as my graduation project (maturski rad) at Gimnazija Svetozar Marković, Jagodina, in 2026. It was graded 5/5.
 
-**Live demo:** _coming soon_
+**Authors:** In this README, “I” refers to Kristijan Šarčević, and “my partner” refers to Sava Šašović.
+
+**Live demo:** *coming soon*
 
 ## Features
 
@@ -28,9 +30,11 @@ BiteByte is a website where people can share recipes, browse other people's reci
 
 1. Install [XAMPP](https://www.apachefriends.org/) and start **Apache** and **MySQL**.
 2. Clone this repo into `xampp/htdocs/`:
+
    ```
    git clone https://github.com/SannieBoi/BiteByte.git
    ```
+
 3. Open phpMyAdmin (`http://localhost/phpmyadmin`), create a database named `bitebyte` and import `sql/bitebyte (2).sql`.
 4. Open `http://localhost/BiteByte/php/index.php`.
 
