@@ -4,7 +4,7 @@ BiteByte is a website where people can share recipes, browse other people's reci
 
 **Authors:** In this README, “I” refers to Kristijan Šarčević, and “my partner” refers to Sava Šašović.
 
-**Live demo:** *coming soon*
+**Live demo:** [Available here.](https://bitebyte.infinityfreeapp.com/php/index.php)
 
 ## Features
 
