@@ -62,15 +62,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $selected_categories = $_POST['category'] ?? [];
     $selected_tags = $_POST['tags'] ?? [];
 
+    // BUG-002 fix: check what the file really is on the server, not its name.
+    // Only real JPG and PNG images are accepted, and they get our own extension.
+    $upload_error = false;
+    $photo_ext = null;
+    if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+        $info = @getimagesize($_FILES['photo']['tmp_name']);
+        $allowed = [IMAGETYPE_JPEG => 'jpg', IMAGETYPE_PNG => 'png'];
+        if ($info === false || !isset($allowed[$info[2]])) {
+            $upload_error = true;
+        } else {
+            $photo_ext = $allowed[$info[2]];
+        }
+    }
+
     if (empty($title) || $time_needed <= 0 || empty($recipe_text)) {
         $poruka = "<p style='color: red;'>Molimo popunite sva obavezna polja (Naziv, Vreme, Recept).</p>";
+    } elseif ($upload_error) {
+        $poruka = "<p style='color: red;'>Only JPG and PNG images are allowed as the recipe photo.</p>";
     } else {
         $image_name = $recipe['ImageURL']; 
         
         if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
             $file_tmp = $_FILES['photo']['tmp_name'];
-            $original_name = $_FILES['photo']['name'];
-            $ext = pathinfo($original_name, PATHINFO_EXTENSION);
+            $ext = $photo_ext;
             
             $image_name = time() . "_" . uniqid() . "." . $ext;
             $target_dir = "../img/recipe_images/";
