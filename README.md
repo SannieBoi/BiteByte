@@ -50,6 +50,3 @@ js/     form validation, carousel and recipe page scripts
 php/    pages with server logic (login, sign up, recipes, submit, edit, delete)
 sql/    database dump
 ```
-
----
-Author: Kristijan Sarcevic · [LinkedIn](https://www.linkedin.com/in/kristijan-sarcevic) · [GitHub](https://github.com/SannieBoi)
